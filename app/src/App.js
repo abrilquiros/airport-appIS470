@@ -4,27 +4,49 @@ function App() {
   const [flight, setFlight] = useState("");
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h1>Air Travel Assist</h1>
+    <div style={{
+      backgroundColor: "#f4f6fb",
+      minHeight: "100vh",
+      padding: "30px",
+      fontFamily: "Arial, sans-serif"
+    }}>
+      <h1 style={{ textAlign: "center" }}>✈️ Air Travel Assist</h1>
 
-      <h2>Enter Flight</h2>
-      <input
-        type="text"
-        placeholder="Enter flight number"
-        value={flight}
-        onChange={(e) => setFlight(e.target.value)}
-      />
+      <div style={{
+        maxWidth: "420px",
+        margin: "30px auto",
+        backgroundColor: "white",
+        padding: "24px",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.12)"
+      }}>
+        <h2>Enter Flight</h2>
 
-      <h2>Flight Information</h2>
-      <p><strong>Flight:</strong> {flight || "N/A"}</p>
-      <p><strong>Status:</strong> On Time</p>
+        <input
+          type="text"
+          placeholder="Example: AA123"
+          value={flight}
+          onChange={(e) => setFlight(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "20px",
+            borderRadius: "6px",
+            border: "1px solid #ccc"
+          }}
+        />
 
-      <h2>Gate Information</h2>
-      <p><strong>Gate:</strong> B12</p>
-      <p><strong>Terminal:</strong> 2</p>
+        <h3>Flight Information</h3>
+        <p><strong>Flight:</strong> {flight || "AA123"}</p>
+        <p><strong>Status:</strong> On Time</p>
 
-      <h2>Boarding</h2>
-      <p><strong>Boarding Time:</strong> 2:30 PM</p>
+        <h3>Gate & Terminal</h3>
+        <p><strong>Gate:</strong> B12</p>
+        <p><strong>Terminal:</strong> 2</p>
+
+        <h3>Boarding</h3>
+        <p><strong>Boarding Time:</strong> 2:30 PM</p>
+      </div>
     </div>
   );
 }
