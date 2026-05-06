@@ -2,6 +2,7 @@ import { useState } from "react";
 
 function App() {
   const [flight, setFlight] = useState("");
+  const [showTransport, setShowTransport] = useState(false);
 
   return (
     <div style={{
@@ -46,8 +47,39 @@ function App() {
 
         <h3>Boarding</h3>
         <p><strong>Boarding Time:</strong> 2:30 PM</p>
+
+        <hr style={{ margin: "20px 0" }} />
+
+        <button
+          onClick={() => setShowTransport(!showTransport)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "#007bff",
+            color: "white",
+            cursor: "pointer"
+          }}
+        >
+          {showTransport ? "Hide Transportation Options" : "View Transportation Options"}
+        </button>
+
+        {showTransport && (
+          <div style={{ marginTop: "15px" }}>
+            <h3>Transportation Options</h3>
+            <ul>
+              <li>🚕 Taxi</li>
+              <li>🚗 Uber / Lyft</li>
+              <li>🚌 Airport Shuttle</li>
+              <li>🚆 Train / Metro</li>
+              <li>🚐 Rental Car Pickup</li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
+    
   );
 }
 
