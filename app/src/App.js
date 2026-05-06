@@ -3,6 +3,33 @@ import { useState } from "react";
 function App() {
   const [flight, setFlight] = useState("");
   const [showTransport, setShowTransport] = useState(false);
+  const [selectedAirline, setSelectedAirline] = useState("American");
+
+const airlineFlights = {
+  American: {
+    flight: "AA123",
+    status: "On Time",
+    gate: "B12",
+    terminal: "2",
+    boarding: "2:30 PM",
+  },
+
+  Delta: {
+    flight: "DL456",
+    status: "Delayed",
+    gate: "C4",
+    terminal: "1",
+    boarding: "4:10 PM",
+  },
+
+  United: {
+    flight: "UA789",
+    status: "Boarding Soon",
+    gate: "A8",
+    terminal: "3",
+    boarding: "6:45 PM",
+  },
+};
 
   return (
     <div style={{
@@ -22,31 +49,46 @@ function App() {
         boxShadow: "0 4px 12px rgba(0,0,0,0.12)"
       }}>
         <h2>Enter Flight</h2>
+        <h3>Select Airline</h3>
+
+<select
+  value={selectedAirline}
+  onChange={(e) => setSelectedAirline(e.target.value)}
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "20px",
+    borderRadius: "6px",
+  }}
+>
+  <option value="American">American Airlines</option>
+  <option value="Delta">Delta Airlines</option>
+  <option value="United">United Airlines</option>
+</select>
 
         <input
-          type="text"
-          placeholder="Example: AA123"
-          value={flight}
-          onChange={(e) => setFlight(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "20px",
-            borderRadius: "6px",
-            border: "1px solid #ccc"
-          }}
-        />
+  type="text"
+  value={airlineFlights[selectedAirline].flight}
+  readOnly
+  style={{
+    width: "100%",
+    padding: "10px",
+    marginBottom: "20px",
+    borderRadius: "6px",
+    border: "1px solid #ccc"
+  }}
+/>
 
         <h3>Flight Information</h3>
-        <p><strong>Flight:</strong> {flight || "AA123"}</p>
-        <p><strong>Status:</strong> On Time</p>
+<p><strong>Flight:</strong> {airlineFlights[selectedAirline].flight}</p>
+<p><strong>Status:</strong> {airlineFlights[selectedAirline].status}</p>
 
-        <h3>Gate & Terminal</h3>
-        <p><strong>Gate:</strong> B12</p>
-        <p><strong>Terminal:</strong> 2</p>
+<h3>Gate & Terminal</h3>
+<p><strong>Gate:</strong> {airlineFlights[selectedAirline].gate}</p>
+<p><strong>Terminal:</strong> {airlineFlights[selectedAirline].terminal}</p>
 
-        <h3>Boarding</h3>
-        <p><strong>Boarding Time:</strong> 2:30 PM</p>
+<h3>Boarding</h3>
+<p><strong>Boarding Time:</strong> {airlineFlights[selectedAirline].boarding}</p>
 
         <hr style={{ margin: "20px 0" }} />
 
