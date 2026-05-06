@@ -1,116 +1,164 @@
 import { useState } from "react";
 
 function App() {
-  const [flight, setFlight] = useState("");
   const [showTransport, setShowTransport] = useState(false);
   const [selectedAirline, setSelectedAirline] = useState("American");
 
-const airlineFlights = {
-  American: {
-    flight: "AA123",
-    status: "On Time",
-    gate: "B12",
-    terminal: "2",
-    boarding: "2:30 PM",
-  },
+  const airlineFlights = {
+    American: {
+      flight: "AA123",
+      status: "On Time",
+      gate: "B12",
+      terminal: "2",
+      boarding: "2:30 PM",
+    },
+    Delta: {
+      flight: "DL456",
+      status: "Delayed",
+      gate: "C4",
+      terminal: "1",
+      boarding: "4:10 PM",
+    },
+    United: {
+      flight: "UA789",
+      status: "Boarding Soon",
+      gate: "A8",
+      terminal: "3",
+      boarding: "6:45 PM",
+    },
+  };
 
-  Delta: {
-    flight: "DL456",
-    status: "Delayed",
-    gate: "C4",
-    terminal: "1",
-    boarding: "4:10 PM",
-  },
+  const priceOptions = {
+    Budget: "$120",
+    Standard: "$280",
+    Premium: "$540",
+  };
 
-  United: {
-    flight: "UA789",
-    status: "Boarding Soon",
-    gate: "A8",
-    terminal: "3",
-    boarding: "6:45 PM",
-  },
-};
+  const flightInfo = airlineFlights[selectedAirline];
 
   return (
-    <div style={{
-      backgroundColor: "#f4f6fb",
-      minHeight: "100vh",
-      padding: "30px",
-      fontFamily: "Arial, sans-serif"
-    }}>
-      <h1 style={{ textAlign: "center" }}>✈️ Air Travel Assist</h1>
+    <div
+      style={{
+        background: "linear-gradient(135deg, #eef4ff, #f8fafc)",
+        minHeight: "100vh",
+        padding: "40px 20px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <h1 style={{ textAlign: "center", fontSize: "42px", marginBottom: "8px" }}>
+        ✈️ Air Travel Assist
+      </h1>
 
-      <div style={{
-        maxWidth: "420px",
-        margin: "30px auto",
-        backgroundColor: "white",
-        padding: "24px",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.12)"
-      }}>
-        <h2>Enter Flight</h2>
-        <h3>Select Airline</h3>
+      <p style={{ textAlign: "center", color: "#555", marginBottom: "30px" }}>
+        Quickly view flight, boarding, pricing, and airport transportation details.
+      </p>
 
-<select
-  value={selectedAirline}
-  onChange={(e) => setSelectedAirline(e.target.value)}
-  style={{
-    width: "100%",
-    padding: "10px",
-    marginBottom: "20px",
-    borderRadius: "6px",
-  }}
->
-  <option value="American">American Airlines</option>
-  <option value="Delta">Delta Airlines</option>
-  <option value="United">United Airlines</option>
-</select>
+      <div
+        style={{
+          maxWidth: "600px",
+          margin: "0 auto",
+          backgroundColor: "white",
+          padding: "30px",
+          borderRadius: "18px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Search Flight</h2>
+
+        <label style={{ fontWeight: "bold" }}>Select Airline</label>
+        <select
+          value={selectedAirline}
+          onChange={(e) => setSelectedAirline(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginTop: "8px",
+            marginBottom: "18px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            fontSize: "16px",
+          }}
+        >
+          <option value="American">American Airlines</option>
+          <option value="Delta">Delta Airlines</option>
+          <option value="United">United Airlines</option>
+        </select>
 
         <input
-  type="text"
-  value={airlineFlights[selectedAirline].flight}
-  readOnly
-  style={{
-    width: "100%",
-    padding: "10px",
-    marginBottom: "20px",
-    borderRadius: "6px",
-    border: "1px solid #ccc"
-  }}
-/>
+          type="text"
+          value={flightInfo.flight}
+          readOnly
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginBottom: "25px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            fontSize: "16px",
+            backgroundColor: "#f8fafc",
+          }}
+        />
 
-        <h3>Flight Information</h3>
-<p><strong>Flight:</strong> {airlineFlights[selectedAirline].flight}</p>
-<p><strong>Status:</strong> {airlineFlights[selectedAirline].status}</p>
+        <div
+          style={{
+            backgroundColor: "#f1f5f9",
+            padding: "20px",
+            borderRadius: "14px",
+            marginBottom: "20px",
+          }}
+        >
+          <h3 style={{ marginTop: 0 }}>Flight Information</h3>
+          <p><strong>Flight:</strong> {flightInfo.flight}</p>
+          <p><strong>Status:</strong> {flightInfo.status}</p>
+          <p><strong>Gate:</strong> {flightInfo.gate}</p>
+          <p><strong>Terminal:</strong> {flightInfo.terminal}</p>
+          <p><strong>Boarding Time:</strong> {flightInfo.boarding}</p>
+        </div>
 
-<h3>Gate & Terminal</h3>
-<p><strong>Gate:</strong> {airlineFlights[selectedAirline].gate}</p>
-<p><strong>Terminal:</strong> {airlineFlights[selectedAirline].terminal}</p>
-
-<h3>Boarding</h3>
-<p><strong>Boarding Time:</strong> {airlineFlights[selectedAirline].boarding}</p>
-
-        <hr style={{ margin: "20px 0" }} />
+        <div
+          style={{
+            backgroundColor: "#eff6ff",
+            padding: "20px",
+            borderRadius: "14px",
+            marginBottom: "20px",
+          }}
+        >
+          <h3 style={{ marginTop: 0 }}>Price Options</h3>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <div style={priceCardStyle}><strong>Budget</strong><br />{priceOptions.Budget}</div>
+            <div style={priceCardStyle}><strong>Standard</strong><br />{priceOptions.Standard}</div>
+            <div style={priceCardStyle}><strong>Premium</strong><br />{priceOptions.Premium}</div>
+          </div>
+        </div>
 
         <button
           onClick={() => setShowTransport(!showTransport)}
           style={{
             width: "100%",
-            padding: "10px",
-            borderRadius: "6px",
+            padding: "14px",
+            borderRadius: "10px",
             border: "none",
-            backgroundColor: "#007bff",
+            backgroundColor: "#2563eb",
             color: "white",
-            cursor: "pointer"
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
           }}
         >
           {showTransport ? "Hide Transportation Options" : "View Transportation Options"}
         </button>
 
         {showTransport && (
-          <div style={{ marginTop: "15px" }}>
-            <h3>Transportation Options</h3>
-            <ul>
+          <div
+            style={{
+              marginTop: "20px",
+              backgroundColor: "#f8fafc",
+              padding: "20px",
+              borderRadius: "14px",
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>Transportation Options</h3>
+            <ul style={{ lineHeight: "1.8" }}>
               <li>🚕 Taxi</li>
               <li>🚗 Uber / Lyft</li>
               <li>🚌 Airport Shuttle</li>
@@ -121,8 +169,17 @@ const airlineFlights = {
         )}
       </div>
     </div>
-    
   );
 }
+
+const priceCardStyle = {
+  flex: "1",
+  minWidth: "120px",
+  backgroundColor: "white",
+  padding: "14px",
+  borderRadius: "10px",
+  textAlign: "center",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+};
 
 export default App;
