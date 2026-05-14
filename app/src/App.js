@@ -5,13 +5,13 @@ function App() {
   const [selectedAirline, setSelectedAirline] = useState("American");
   const [favoriteLocations, setFavoriteLocations] = useState([]);
 
-const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
+  const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
 
-const saveFavoriteLocation = (airport) => {
-  if (!favoriteLocations.includes(airport)) {
-    setFavoriteLocations([...favoriteLocations, airport]);
-  }
-};
+  const saveFavoriteLocation = (airport) => {
+    if (!favoriteLocations.includes(airport)) {
+      setFavoriteLocations([...favoriteLocations, airport]);
+    }
+  };
 
   const airlineFlights = {
     American: {
@@ -158,7 +158,6 @@ const saveFavoriteLocation = (airport) => {
         </button>
 
         {showTransport && (
-          
           <div
             style={{
               marginTop: "20px",
@@ -177,41 +176,93 @@ const saveFavoriteLocation = (airport) => {
             </ul>
           </div>
         )}
-        <div style={{ marginTop: "25px" }}>
-  <h3>⭐ Favorite Airports</h3>
 
-  {airports.map((airport) => (
-    <button
-      key={airport}
-      onClick={() => saveFavoriteLocation(airport)}
-      style={{
-        margin: "5px",
-        padding: "8px 12px",
-        borderRadius: "6px",
-        border: "none",
-        backgroundColor: "#4f46e5",
-        color: "white",
-        cursor: "pointer"
-      }}
-    >
-      Save {airport}
-    </button>
-  ))}
+        <div
+          style={{
+            marginTop: "25px",
+            backgroundColor: "#f8fafc",
+            padding: "20px",
+            borderRadius: "14px",
+          }}
+        >
+          <h3>⭐ Favorite Airports</h3>
 
-  <div style={{ marginTop: "15px" }}>
-    <h4>Saved Locations:</h4>
+          {airports.map((airport) => (
+            <button
+              key={airport}
+              onClick={() => saveFavoriteLocation(airport)}
+              style={{
+                margin: "5px",
+                padding: "8px 12px",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: "#4f46e5",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Save {airport}
+            </button>
+          ))}
 
-    {favoriteLocations.length === 0 ? (
-      <p>No favorite airports saved yet.</p>
-    ) : (
-      <ul>
-        {favoriteLocations.map((airport) => (
-          <li key={airport}>✈️ {airport}</li>
-        ))}
-      </ul>
-    )}
-  </div>
-</div>
+          <div style={{ marginTop: "15px" }}>
+            <h4>Saved Locations:</h4>
+
+            {favoriteLocations.length === 0 ? (
+              <p>No favorite airports saved yet.</p>
+            ) : (
+              <ul>
+                {favoriteLocations.map((airport) => (
+                  <li key={airport}>✈️ {airport}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "25px",
+            backgroundColor: "#f8fafc",
+            padding: "20px",
+            borderRadius: "14px",
+          }}
+        >
+          <h3>📞 Customer Support</h3>
+
+          <p><strong>Support Phone:</strong> (800) 555-1234</p>
+          <p><strong>Email:</strong> support@airtravelassist.com</p>
+          <p><strong>Live Chat:</strong> Available 24/7</p>
+
+          <textarea
+            placeholder="Describe your travel issue..."
+            style={{
+              width: "100%",
+              marginTop: "10px",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              minHeight: "80px",
+              fontFamily: "Arial, sans-serif",
+            }}
+          />
+
+          <button
+            style={{
+              marginTop: "10px",
+              width: "100%",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#16a34a",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            Submit Support Request
+          </button>
+        </div>
       </div>
     </div>
   );
