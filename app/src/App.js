@@ -2,8 +2,18 @@ import { useState } from "react";
 
 function App() {
   const [showTransport, setShowTransport] = useState(false);
+  const [showBaggage, setShowBaggage] = useState(false);
   const [selectedAirline, setSelectedAirline] = useState("American");
   const [showPolicy, setShowPolicy] = useState(false);
+  const [favoriteLocations, setFavoriteLocations] = useState([]);
+
+  const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
+
+  const saveFavoriteLocation = (airport) => {
+    if (!favoriteLocations.includes(airport)) {
+      setFavoriteLocations([...favoriteLocations, airport]);
+    }
+  };
 
   const airlineFlights = {
     American: {
@@ -17,6 +27,7 @@ function App() {
         "Check-in closes 45 minutes before departure",
         "Face covering optional during travel",
       ],
+      baggageClaim: "Carousel 5",
     },
 
     Delta: {
@@ -30,6 +41,7 @@ function App() {
         "Boarding begins 40 minutes before departure",
         "Changes allowed with applicable fare difference",
       ],
+      baggageClaim: "Carousel 9",
     },
 
     United: {
@@ -43,6 +55,7 @@ function App() {
         "Carry-on allowed for most fares",
         "Arrive at gate at least 30 minutes before departure",
       ],
+      baggageClaim: "Carousel 2",
     },
   };
 
@@ -229,6 +242,59 @@ function App() {
         )}
 
         <button
+        onClick={() => setShowBaggage(!showBaggage)}
+        style={{
+          width: "100%",
+          padding: "14px",
+          borderRadius: "10px",
+          border: "none",
+          backgroundColor: "#9333ea",
+          color: "white",
+          cursor: "pointer",
+          fontSize: "16px",
+          fontWeight: "bold",
+          marginBottom: "15px",
+        }}
+      >
+        {showBaggage
+          ? "Hide Baggage Claim Information"
+          : "Check Baggage Claim Information"}
+      </button>
+
+      {showBaggage && (
+        <div
+          style={{
+            marginTop: "20px",
+            backgroundColor: "#faf5ff",
+            padding: "20px",
+            borderRadius: "14px",
+          }}
+        >
+          <h3 style={{ marginTop: 0 }}>
+            🧳 Baggage Claim Information
+          </h3>
+
+          <p>
+            <strong>Flight:</strong> {flightInfo.flight}
+          </p>
+
+          <p>
+            <strong>Terminal:</strong> {flightInfo.terminal}
+          </p>
+
+          <p>
+            <strong>Baggage Claim:</strong>{" "}
+            {flightInfo.baggageClaim}
+          </p>
+
+          <p>
+            Please proceed to the assigned carousel after arrival
+            to retrieve your luggage.
+          </p>
+        </div>
+      )}
+      
+        <button
           onClick={() => setShowTransport(!showTransport)}
           style={{
             width: "100%",
@@ -269,6 +335,94 @@ function App() {
             </ul>
           </div>
         )}
+
+        <div
+          style={{
+            marginTop: "25px",
+            backgroundColor: "#f8fafc",
+            padding: "20px",
+            borderRadius: "14px",
+          }}
+        >
+          <h3>⭐ Favorite Airports</h3>
+
+          {airports.map((airport) => (
+            <button
+              key={airport}
+              onClick={() => saveFavoriteLocation(airport)}
+              style={{
+                margin: "5px",
+                padding: "8px 12px",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: "#4f46e5",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Save {airport}
+            </button>
+          ))}
+
+          <div style={{ marginTop: "15px" }}>
+            <h4>Saved Locations:</h4>
+
+            {favoriteLocations.length === 0 ? (
+              <p>No favorite airports saved yet.</p>
+            ) : (
+              <ul>
+                {favoriteLocations.map((airport) => (
+                  <li key={airport}>✈️ {airport}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: "25px",
+            backgroundColor: "#f8fafc",
+            padding: "20px",
+            borderRadius: "14px",
+          }}
+        >
+          <h3>📞 Customer Support</h3>
+
+          <p><strong>Support Phone:</strong> (800) 555-1234</p>
+          <p><strong>Email:</strong> support@airtravelassist.com</p>
+          <p><strong>Live Chat:</strong> Available 24/7</p>
+
+          <textarea
+            placeholder="Describe your travel issue..."
+            style={{
+              width: "100%",
+              marginTop: "10px",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              minHeight: "80px",
+              fontFamily: "Arial, sans-serif",
+            }}
+          />
+
+          <button
+            style={{
+              marginTop: "10px",
+              width: "100%",
+              padding: "12px",
+              borderRadius: "8px",
+              border: "none",
+              backgroundColor: "#16a34a",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            Submit Support Request
+          </button>
+        </div>
+        
       </div>
     </div>
   );
