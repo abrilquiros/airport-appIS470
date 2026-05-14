@@ -3,6 +3,15 @@ import { useState } from "react";
 function App() {
   const [showTransport, setShowTransport] = useState(false);
   const [selectedAirline, setSelectedAirline] = useState("American");
+  const [favoriteLocations, setFavoriteLocations] = useState([]);
+
+const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
+
+const saveFavoriteLocation = (airport) => {
+  if (!favoriteLocations.includes(airport)) {
+    setFavoriteLocations([...favoriteLocations, airport]);
+  }
+};
 
   const airlineFlights = {
     American: {
@@ -149,6 +158,7 @@ function App() {
         </button>
 
         {showTransport && (
+          
           <div
             style={{
               marginTop: "20px",
@@ -167,6 +177,41 @@ function App() {
             </ul>
           </div>
         )}
+        <div style={{ marginTop: "25px" }}>
+  <h3>⭐ Favorite Airports</h3>
+
+  {airports.map((airport) => (
+    <button
+      key={airport}
+      onClick={() => saveFavoriteLocation(airport)}
+      style={{
+        margin: "5px",
+        padding: "8px 12px",
+        borderRadius: "6px",
+        border: "none",
+        backgroundColor: "#4f46e5",
+        color: "white",
+        cursor: "pointer"
+      }}
+    >
+      Save {airport}
+    </button>
+  ))}
+
+  <div style={{ marginTop: "15px" }}>
+    <h4>Saved Locations:</h4>
+
+    {favoriteLocations.length === 0 ? (
+      <p>No favorite airports saved yet.</p>
+    ) : (
+      <ul>
+        {favoriteLocations.map((airport) => (
+          <li key={airport}>✈️ {airport}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+</div>
       </div>
     </div>
   );
