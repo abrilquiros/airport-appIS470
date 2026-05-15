@@ -362,7 +362,29 @@ function App() {
             ) : (
               <ul>
                 {favoriteLocations.map((airport) => (
-                  <li key={airport}>✈️ {airport}</li>
+                  <li key={airport} style={{ marginBottom: "8px" }}>
+  ✈️ {airport}
+
+  <button
+    onClick={() =>
+      setFavoriteLocations(
+        favoriteLocations.filter((fav) => fav !== airport)
+      )
+    }
+    style={{
+      marginLeft: "10px",
+      padding: "4px 8px",
+      borderRadius: "6px",
+      border: "none",
+      backgroundColor: "#dc2626",
+      color: "white",
+      cursor: "pointer",
+      fontSize: "12px"
+    }}
+  >
+    Remove
+  </button>
+</li>
                 ))}
               </ul>
             )}
