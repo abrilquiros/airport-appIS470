@@ -3,7 +3,6 @@ import { useState } from "react";
 function App() {
   const [showTransport, setShowTransport] = useState(false);
   const [showBaggage, setShowBaggage] = useState(false);
-  const [selectedAirline, setSelectedAirline] = useState("American");
   const [showPolicy, setShowPolicy] = useState(false);
   const [selectedAirline, setSelectedAirline] = useState("American");
   const [favoriteLocations, setFavoriteLocations] = useState([]);
@@ -16,6 +15,10 @@ function App() {
     }
   };
 
+  const removeFavoriteLocation = (airport) => {
+    setFavoriteLocations(favoriteLocations.filter((fav) => fav !== airport));
+  };
+
   const airlineFlights = {
     American: {
       flight: "AA123",
@@ -23,14 +26,12 @@ function App() {
       gate: "B12",
       terminal: "2",
       boarding: "2:30 PM",
+      baggageClaim: "Carousel 5",
       policy: [
         "1 free carry-on bag included",
         "Check-in closes 45 minutes before departure",
         "Face covering optional during travel",
       ],
-      baggageClaim: "Carousel 5",
-    },
-
     },
     Delta: {
       flight: "DL456",
@@ -38,14 +39,12 @@ function App() {
       gate: "C4",
       terminal: "1",
       boarding: "4:10 PM",
+      baggageClaim: "Carousel 9",
       policy: [
         "Free Wi-Fi available on select flights",
         "Boarding begins 40 minutes before departure",
         "Changes allowed with applicable fare difference",
       ],
-      baggageClaim: "Carousel 9",
-    },
-
     },
     United: {
       flight: "UA789",
@@ -53,12 +52,12 @@ function App() {
       gate: "A8",
       terminal: "3",
       boarding: "6:45 PM",
+      baggageClaim: "Carousel 2",
       policy: [
         "Basic Economy has limited seat selection",
         "Carry-on allowed for most fares",
         "Arrive at gate at least 30 minutes before departure",
       ],
-      baggageClaim: "Carousel 2",
     },
   };
 
@@ -79,31 +78,12 @@ function App() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <h1
-        style={{
-          textAlign: "center",
-          fontSize: "42px",
-          marginBottom: "8px",
-        }}
-      >
-        ✈️ Air Travel Assist
-      </h1>
-
-      <p
-        style={{
-          textAlign: "center",
-          color: "#555",
-          marginBottom: "30px",
-        }}
-      >
-        Quickly view flight, boarding, pricing, and airport transportation
-        details.
       <h1 style={{ textAlign: "center", fontSize: "42px", marginBottom: "8px" }}>
         ✈️ Air Travel Assist
       </h1>
 
       <p style={{ textAlign: "center", color: "#555", marginBottom: "30px" }}>
-        Quickly view flight, boarding, pricing, and airport transportation details.
+        Quickly view flight, boarding, pricing, airline policy, baggage, and airport transportation details.
       </p>
 
       <div
@@ -117,10 +97,6 @@ function App() {
         }}
       >
         <h2 style={{ marginTop: 0 }}>Search Flight</h2>
-
-        <label style={{ fontWeight: "bold" }}>
-          Select Airline
-        </label>
 
         <label style={{ fontWeight: "bold" }}>Select Airline</label>
         <select
@@ -156,16 +132,8 @@ function App() {
           }}
         />
 
-        <div
-          style={{
-            backgroundColor: "#f1f5f9",
-            padding: "20px",
-            borderRadius: "14px",
-            marginBottom: "20px",
-          }}
-        >
+        <div style={sectionStyle}>
           <h3 style={{ marginTop: 0 }}>Flight Information</h3>
-
           <p><strong>Flight:</strong> {flightInfo.flight}</p>
           <p><strong>Status:</strong> {flightInfo.status}</p>
           <p><strong>Gate:</strong> {flightInfo.gate}</p>
@@ -173,40 +141,8 @@ function App() {
           <p><strong>Boarding Time:</strong> {flightInfo.boarding}</p>
         </div>
 
-        <div
-          style={{
-            backgroundColor: "#eff6ff",
-            padding: "20px",
-            borderRadius: "14px",
-            marginBottom: "20px",
-          }}
-        >
+        <div style={{ ...sectionStyle, backgroundColor: "#eff6ff" }}>
           <h3 style={{ marginTop: 0 }}>Price Options</h3>
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={priceCardStyle}>
-              <strong>Budget</strong>
-              <br />
-              {priceOptions.Budget}
-            </div>
-
-            <div style={priceCardStyle}>
-              <strong>Standard</strong>
-              <br />
-              {priceOptions.Standard}
-            </div>
-
-            <div style={priceCardStyle}>
-              <strong>Premium</strong>
-              <br />
-              {priceOptions.Premium}
-            </div>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <div style={priceCardStyle}><strong>Budget</strong><br />{priceOptions.Budget}</div>
             <div style={priceCardStyle}><strong>Standard</strong><br />{priceOptions.Standard}</div>
@@ -214,133 +150,41 @@ function App() {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowPolicy(!showPolicy)}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: "#0f766e",
-            color: "white",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-            marginBottom: "15px",
-          }}
-        >
-          {showPolicy
-            ? "Hide Airline Policy"
-            : "View Airline Policy"}
+        <button onClick={() => setShowPolicy(!showPolicy)} style={{ ...buttonStyle, backgroundColor: "#0f766e" }}>
+          {showPolicy ? "Hide Airline Policy" : "View Airline Policy"}
         </button>
 
         {showPolicy && (
-          <div
-            style={{
-              backgroundColor: "#ecfeff",
-              padding: "20px",
-              borderRadius: "14px",
-              marginBottom: "20px",
-            }}
-          >
-            <h3 style={{ marginTop: 0 }}>
-              Airline Policy - {selectedAirline}
-            </h3>
-
+          <div style={{ ...sectionStyle, backgroundColor: "#ecfeff" }}>
+            <h3 style={{ marginTop: 0 }}>Airline Policy - {selectedAirline}</h3>
             <ul style={{ lineHeight: "1.8" }}>
               {flightInfo.policy.map((item, index) => (
-                <li key={index}> {item}</li>
+                <li key={index}>{item}</li>
               ))}
             </ul>
           </div>
         )}
 
-        <button
-        onClick={() => setShowBaggage(!showBaggage)}
-        style={{
-          width: "100%",
-          padding: "14px",
-          borderRadius: "10px",
-          border: "none",
-          backgroundColor: "#9333ea",
-          color: "white",
-          cursor: "pointer",
-          fontSize: "16px",
-          fontWeight: "bold",
-          marginBottom: "15px",
-        }}
-      >
-        {showBaggage
-          ? "Hide Baggage Claim Information"
-          : "Check Baggage Claim Information"}
-      </button>
+        <button onClick={() => setShowBaggage(!showBaggage)} style={{ ...buttonStyle, backgroundColor: "#9333ea" }}>
+          {showBaggage ? "Hide Baggage Claim Information" : "Check Baggage Claim Information"}
+        </button>
 
-      {showBaggage && (
-        <div
-          style={{
-            marginTop: "20px",
-            backgroundColor: "#faf5ff",
-            padding: "20px",
-            borderRadius: "14px",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>
-            🧳 Baggage Claim Information
-          </h3>
+        {showBaggage && (
+          <div style={{ ...sectionStyle, backgroundColor: "#faf5ff" }}>
+            <h3 style={{ marginTop: 0 }}>🧳 Baggage Claim Information</h3>
+            <p><strong>Flight:</strong> {flightInfo.flight}</p>
+            <p><strong>Terminal:</strong> {flightInfo.terminal}</p>
+            <p><strong>Baggage Claim:</strong> {flightInfo.baggageClaim}</p>
+            <p>Please proceed to the assigned carousel after arrival to retrieve your luggage.</p>
+          </div>
+        )}
 
-          <p>
-            <strong>Flight:</strong> {flightInfo.flight}
-          </p>
-
-          <p>
-            <strong>Terminal:</strong> {flightInfo.terminal}
-          </p>
-
-          <p>
-            <strong>Baggage Claim:</strong>{" "}
-            {flightInfo.baggageClaim}
-          </p>
-
-          <p>
-            Please proceed to the assigned carousel after arrival
-            to retrieve your luggage.
-          </p>
-        </div>
-      )}
-      
-        <button
-          onClick={() => setShowTransport(!showTransport)}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: "#2563eb",
-            color: "white",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold",
-          }}
-        >
-          {showTransport
-            ? "Hide Transportation Options"
-            : "View Transportation Options"}
+        <button onClick={() => setShowTransport(!showTransport)} style={{ ...buttonStyle, backgroundColor: "#2563eb" }}>
           {showTransport ? "Hide Transportation Options" : "View Transportation Options"}
         </button>
 
         {showTransport && (
-          <div
-            style={{
-              marginTop: "20px",
-              backgroundColor: "#f8fafc",
-              padding: "20px",
-              borderRadius: "14px",
-            }}
-          >
-            <h3 style={{ marginTop: 0 }}>
-              Transportation Options
-            </h3>
-
+          <div style={sectionStyle}>
             <h3 style={{ marginTop: 0 }}>Transportation Options</h3>
             <ul style={{ lineHeight: "1.8" }}>
               <li>🚕 Taxi</li>
@@ -352,14 +196,7 @@ function App() {
           </div>
         )}
 
-        <div
-          style={{
-            marginTop: "25px",
-            backgroundColor: "#f8fafc",
-            padding: "20px",
-            borderRadius: "14px",
-          }}
-        >
+        <div style={sectionStyle}>
           <h3>⭐ Favorite Airports</h3>
 
           {airports.map((airport) => (
@@ -388,46 +225,32 @@ function App() {
             ) : (
               <ul>
                 {favoriteLocations.map((airport) => (
-                  <li key={airport}>✈️ {airport}</li>
                   <li key={airport} style={{ marginBottom: "8px" }}>
-  ✈️ {airport}
-
-  <button
-    onClick={() =>
-      setFavoriteLocations(
-        favoriteLocations.filter((fav) => fav !== airport)
-      )
-    }
-    style={{
-      marginLeft: "10px",
-      padding: "4px 8px",
-      borderRadius: "6px",
-      border: "none",
-      backgroundColor: "#dc2626",
-      color: "white",
-      cursor: "pointer",
-      fontSize: "12px"
-    }}
-  >
-    Remove
-  </button>
-</li>
+                    ✈️ {airport}
+                    <button
+                      onClick={() => removeFavoriteLocation(airport)}
+                      style={{
+                        marginLeft: "10px",
+                        padding: "4px 8px",
+                        borderRadius: "6px",
+                        border: "none",
+                        backgroundColor: "#dc2626",
+                        color: "white",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </li>
                 ))}
               </ul>
             )}
           </div>
         </div>
 
-        <div
-          style={{
-            marginTop: "25px",
-            backgroundColor: "#f8fafc",
-            padding: "20px",
-            borderRadius: "14px",
-          }}
-        >
+        <div style={sectionStyle}>
           <h3>📞 Customer Support</h3>
-
           <p><strong>Support Phone:</strong> (800) 555-1234</p>
           <p><strong>Email:</strong> support@airtravelassist.com</p>
           <p><strong>Live Chat:</strong> Available 24/7</p>
@@ -445,27 +268,34 @@ function App() {
             }}
           />
 
-          <button
-            style={{
-              marginTop: "10px",
-              width: "100%",
-              padding: "12px",
-              borderRadius: "8px",
-              border: "none",
-              backgroundColor: "#16a34a",
-              color: "white",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-          >
+          <button style={{ ...buttonStyle, backgroundColor: "#16a34a" }}>
             Submit Support Request
           </button>
         </div>
-        
       </div>
     </div>
   );
 }
+
+const sectionStyle = {
+  marginTop: "20px",
+  backgroundColor: "#f8fafc",
+  padding: "20px",
+  borderRadius: "14px",
+  marginBottom: "20px",
+};
+
+const buttonStyle = {
+  width: "100%",
+  padding: "14px",
+  borderRadius: "10px",
+  border: "none",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "16px",
+  fontWeight: "bold",
+  marginBottom: "15px",
+};
 
 const priceCardStyle = {
   flex: "1",
