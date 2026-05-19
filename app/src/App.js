@@ -6,8 +6,36 @@ function App() {
   const [showPolicy, setShowPolicy] = useState(false);
   const [selectedAirline, setSelectedAirline] = useState("American");
   const [favoriteLocations, setFavoriteLocations] = useState([]);
+  const [selectedAirportMap, setSelectedAirportMap] = useState(null);
+  const [showMap, setShowMap] = useState(false);
 
-  const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
+  const airports = [
+  {
+    code: "LAX",
+    name: "Los Angeles International Airport",
+    map: "https://www.google.com/maps?q=LAX+Airport&output=embed",
+  },
+  {
+    code: "SAN",
+    name: "San Diego International Airport",
+    map: "https://www.google.com/maps?q=SAN+Airport&output=embed",
+  },
+  {
+    code: "JFK",
+    name: "John F. Kennedy International Airport",
+    map: "https://www.google.com/maps?q=JFK+Airport&output=embed",
+  },
+  {
+    code: "PDX",
+    name: "Portland International Airport",
+    map: "https://www.google.com/maps?q=PDX+Airport&output=embed",
+  },
+  {
+    code: "SEA",
+    name: "Seattle-Tacoma International Airport",
+    map: "https://www.google.com/maps?q=SEA+Airport&output=embed",
+  },
+];
 
   const saveFavoriteLocation = (airport) => {
     if (!favoriteLocations.includes(airport)) {
@@ -197,14 +225,21 @@ function App() {
         )}
 
         <div style={sectionStyle}>
-          <h3>⭐ Favorite Airports</h3>
+         <h3>⭐ Favorite Airports</h3>
 
-          {airports.map((airport) => (
+        {airports.map((airport) => (
+          <div
+            key={airport.code}
+            style={{
+              display: "flex",
+              gap: "10px",
+              marginBottom: "10px",
+              flexWrap: "wrap",
+            }}
+           >
             <button
-              key={airport}
-              onClick={() => saveFavoriteLocation(airport)}
+              onClick={() => saveFavoriteLocation(airport.code)}
               style={{
-                margin: "5px",
                 padding: "8px 12px",
                 borderRadius: "6px",
                 border: "none",
@@ -213,41 +248,141 @@ function App() {
                 cursor: "pointer",
               }}
             >
-              Save {airport}
+              Save {airport.code}
             </button>
-          ))}
 
-          <div style={{ marginTop: "15px" }}>
-            <h4>Saved Locations:</h4>
-
-            {favoriteLocations.length === 0 ? (
-              <p>No favorite airports saved yet.</p>
-            ) : (
-              <ul>
-                {favoriteLocations.map((airport) => (
-                  <li key={airport} style={{ marginBottom: "8px" }}>
-                    ✈️ {airport}
-                    <button
-                      onClick={() => removeFavoriteLocation(airport)}
-                      style={{
-                        marginLeft: "10px",
-                        padding: "4px 8px",
-                        borderRadius: "6px",
-                        border: "none",
-                        backgroundColor: "#dc2626",
-                        color: "white",
-                        cursor: "pointer",
-                        fontSize: "12px",
-                      }}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <button
+              onClick={() => {
+                setSelectedAirportMap(airport);
+                setShowMap(true);
+              }}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "6px",
+                border: "none",
+                backgroundColor: "#0ea5e9",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              View Map
+            </button>
           </div>
-        </div>
+        ))}
+
+  <div style={{ marginTop: "15px" }}>
+    <h4>Saved Locations:</h4>
+
+    {favoriteLocations.length === 0 ? (
+      <p>No favorite airports saved yet.</p>
+    ) : (
+      <ul>
+        {favoriteLocations.map((airportCode) => {
+          const airportData = airports.find(
+            (a) => a.code === airportCode
+          );
+
+          return (
+            <li
+              key={airportCode}
+              style={{ marginBottom: "12px" }}
+            >
+              ✈️ {airportCode}
+
+              <button
+                onClick={() => {
+                  setSelectedAirportMap(airportData);
+                  setShowMap(true);
+                }}
+                style={{
+                  marginLeft: "10px",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "#0284c7",
+                  color: "white",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+              >
+                View Map
+              </button>
+
+              <button
+                onClick={() =>
+                  removeFavoriteLocation(airportCode)
+                }
+                style={{
+                  marginLeft: "10px",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                  border: "none",
+                  backgroundColor: "#dc2626",
+                  color: "white",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+              >
+                Remove
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+  </div>
+
+  {showMap && selectedAirportMap && (
+    <div
+      style={{
+        marginTop: "20px",
+        backgroundColor: "white",
+        padding: "15px",
+        borderRadius: "12px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "10px",
+        }}
+      >
+        <h4 style={{ margin: 0 }}>
+          🗺️ {selectedAirportMap.name}
+        </h4>
+
+        <button
+          onClick={() => setShowMap(false)}
+          style={{
+            padding: "6px 10px",
+            border: "none",
+            borderRadius: "6px",
+            backgroundColor: "#ef4444",
+            color: "white",
+            cursor: "pointer",
+          }}
+        >
+          Close Map
+        </button>
+      </div>
+
+      <iframe
+        title="Airport Map"
+        src={selectedAirportMap.map}
+        width="100%"
+        height="350"
+        style={{
+          border: 0,
+          borderRadius: "12px",
+        }}
+        allowFullScreen=""
+        loading="lazy"
+      ></iframe>
+    </div>
+  )}
+</div>
 
         <div style={sectionStyle}>
           <h3>📞 Customer Support</h3>
