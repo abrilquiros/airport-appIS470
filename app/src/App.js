@@ -49,13 +49,41 @@ function App() {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [currentAlert, setCurrentAlert] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [selectedAirportMap, setSelectedAirportMap] = useState(null);
+  const [showMap, setShowMap] = useState(false);
   const [liveFlightData, setLiveFlightData] = useState(demoLiveFlights.American);
   const [isLoadingLiveData, setIsLoadingLiveData] = useState(false);
   const [apiError, setApiError] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
-  const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
+  const airports = [
+    {
+      code: "LAX",
+      name: "Los Angeles International Airport",
+      map: "https://www.google.com/maps?q=LAX+Airport&output=embed",
+    },
+    {
+      code: "SAN",
+      name: "San Diego International Airport",
+      map: "https://www.google.com/maps?q=SAN+Airport&output=embed",
+    },
+    {
+      code: "JFK",
+      name: "John F. Kennedy International Airport",
+      map: "https://www.google.com/maps?q=JFK+Airport&output=embed",
+    },
+    {
+      code: "PDX",
+      name: "Portland International Airport",
+      map: "https://www.google.com/maps?q=PDX+Airport&output=embed",
+    },
+    {
+      code: "SEA",
+      name: "Seattle-Tacoma International Airport",
+      map: "https://www.google.com/maps?q=SEA+Airport&output=embed",
+    },
+  ];
 
   const airlineFlights = {
     American: {
@@ -243,14 +271,19 @@ function App() {
     return () => clearInterval(refreshTimer);
   }, [autoRefresh, selectedAirline]);
 
-  const saveFavoriteLocation = (airport) => {
-    if (!favoriteLocations.includes(airport)) {
-      setFavoriteLocations([...favoriteLocations, airport]);
+  const saveFavoriteLocation = (airportCode) => {
+    if (!favoriteLocations.includes(airportCode)) {
+      setFavoriteLocations([...favoriteLocations, airportCode]);
     }
   };
 
-  const removeFavoriteLocation = (airport) => {
-    setFavoriteLocations(favoriteLocations.filter((fav) => fav !== airport));
+  const removeFavoriteLocation = (airportCode) => {
+    setFavoriteLocations(favoriteLocations.filter((fav) => fav !== airportCode));
+  };
+
+  const openAirportMap = (airport) => {
+    setSelectedAirportMap(airport);
+    setShowMap(true);
   };
 
   useEffect(() => {
@@ -583,13 +616,20 @@ function App() {
                 <h3 style={smallHeadingStyle}>Favorite Airports</h3>
                 <div style={buttonWrapStyle}>
                   {airports.map((airport) => (
-                    <button
-                      key={airport}
-                      onClick={() => saveFavoriteLocation(airport)}
-                      style={smallButtonStyle}
-                    >
-                      Save {airport}
-                    </button>
+                    <div key={airport.code} style={airportActionStyle}>
+                      <button
+                        onClick={() => saveFavoriteLocation(airport.code)}
+                        style={smallButtonStyle}
+                      >
+                        Save {airport.code}
+                      </button>
+                      <button
+                        onClick={() => openAirportMap(airport)}
+                        style={mapButtonStyle}
+                      >
+                        View Map
+                      </button>
+                    </div>
                   ))}
                 </div>
 
@@ -599,18 +639,55 @@ function App() {
                   <p>No favorite airports saved yet.</p>
                 ) : (
                   <ul>
-                    {favoriteLocations.map((airport) => (
-                      <li key={airport} style={favoriteItemStyle}>
-                        {airport}
+                    {favoriteLocations.map((airportCode) => {
+                      const airport = airports.find(
+                        (item) => item.code === airportCode
+                      );
+
+                      return (
+                      <li key={airportCode} style={favoriteItemStyle}>
+                        {airportCode}
+                        {airport && (
+                          <button
+                            onClick={() => openAirportMap(airport)}
+                            style={savedMapButtonStyle}
+                          >
+                            View Map
+                          </button>
+                        )}
                         <button
-                          onClick={() => removeFavoriteLocation(airport)}
+                          onClick={() => removeFavoriteLocation(airportCode)}
                           style={removeButtonStyle}
                         >
                           Remove
                         </button>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ul>
+                )}
+
+                {showMap && selectedAirportMap && (
+                  <div style={mapBoxStyle}>
+                    <div style={mapHeaderStyle}>
+                      <h4 style={mapTitleStyle}>{selectedAirportMap.name}</h4>
+                      <button
+                        onClick={() => setShowMap(false)}
+                        style={closeMapButtonStyle}
+                      >
+                        Close Map
+                      </button>
+                    </div>
+                    <iframe
+                      title={`${selectedAirportMap.code} airport map`}
+                      src={selectedAirportMap.map}
+                      width="100%"
+                      height="320"
+                      style={mapFrameStyle}
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -940,11 +1017,32 @@ const buttonWrapStyle = {
   marginBottom: "16px",
 };
 
+const airportActionStyle = {
+  display: "flex",
+  gap: "8px",
+  flexWrap: "wrap",
+};
+
 const smallButtonStyle = {
   padding: "8px 12px",
   borderRadius: "8px",
   border: "none",
   backgroundColor: "#1e3a5f",
+  color: "white",
+  cursor: "pointer",
+};
+
+const mapButtonStyle = {
+  ...smallButtonStyle,
+  backgroundColor: "#0284c7",
+};
+
+const savedMapButtonStyle = {
+  marginLeft: "10px",
+  padding: "5px 9px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#0284c7",
   color: "white",
   cursor: "pointer",
 };
@@ -961,6 +1059,41 @@ const removeButtonStyle = {
 
 const favoriteItemStyle = {
   marginBottom: "10px",
+};
+
+const mapBoxStyle = {
+  marginTop: "18px",
+  backgroundColor: "white",
+  border: "1px solid #e2e8f0",
+  borderRadius: "12px",
+  padding: "14px",
+};
+
+const mapHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "12px",
+  marginBottom: "10px",
+};
+
+const mapTitleStyle = {
+  margin: 0,
+  color: "#1e293b",
+};
+
+const closeMapButtonStyle = {
+  padding: "7px 10px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#991b1b",
+  color: "white",
+  cursor: "pointer",
+};
+
+const mapFrameStyle = {
+  border: 0,
+  borderRadius: "10px",
 };
 
 const textAreaStyle = {
