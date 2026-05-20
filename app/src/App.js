@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [showTransport, setShowTransport] = useState(false);
   const [selectedAirline, setSelectedAirline] = useState("American");
   const [favoriteLocations, setFavoriteLocations] = useState([]);
+  const [currentAlert, setCurrentAlert] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   const airports = ["LAX", "SAN", "JFK", "PDX", "SEA"];
 
@@ -45,6 +47,73 @@ function App() {
 
   const flightInfo = airlineFlights[selectedAirline];
 
+  // EMERGENCY ALERTS SYSTEM
+  useEffect(() => {
+    const emergencyAlerts = [
+      {
+        title: '🚨 SECURITY ALERT',
+        message: `Security incident reported at Terminal ${flightInfo.terminal}. Authorities are responding.`,
+        severity: 'high',
+        recommendedAction: 'Avoid Terminal ' + flightInfo.terminal + '. Follow security personnel instructions.',
+        safeArea: `Terminal ${flightInfo.terminal === '2' ? '1 or 3' : '2'} is the safe area.`
+      },
+      {
+        title: '⛈️ SEVERE WEATHER WARNING',
+        message: 'Tornado warning issued for airport area. Seek shelter immediately.',
+        severity: 'high',
+        recommendedAction: 'Move to basement level or interior hallways. Stay away from windows.',
+        safeArea: 'Basement level, interior hallways, or storm shelters in Terminal 1'
+      },
+      {
+        title: '⚠️ FLIGHT DELAY ALERT',
+        message: `Your flight ${flightInfo.flight} is delayed due to severe weather conditions.`,
+        severity: 'medium',
+        recommendedAction: 'Stay near your gate at Terminal ' + flightInfo.terminal + ' and monitor for updates.',
+        safeArea: `Remain in Terminal ${flightInfo.terminal} near Gate ${flightInfo.gate}`
+      },
+      {
+        title: '🏃 EVACUATION ORDER',
+        message: 'Immediate evacuation required for Terminal ' + flightInfo.terminal + ' due to fire alarm.',
+        severity: 'high',
+        recommendedAction: 'Evacuate immediately using stairs. Do not use elevators.',
+        safeArea: 'Proceed to Parking Garage Level 2 for assembly point'
+      }
+    ];
+
+    // Show alerts at different times
+    const timer1 = setTimeout(() => {
+      setCurrentAlert(emergencyAlerts[0]);
+      setShowAlert(true);
+    }, 5000); // Security alert at 5 seconds
+
+    const timer2 = setTimeout(() => {
+      setCurrentAlert(emergencyAlerts[1]);
+      setShowAlert(true);
+    }, 15000); // Weather alert at 15 seconds
+
+    const timer3 = setTimeout(() => {
+      setCurrentAlert(emergencyAlerts[2]);
+      setShowAlert(true);
+    }, 25000); // Delay alert at 25 seconds
+
+    const timer4 = setTimeout(() => {
+      setCurrentAlert(emergencyAlerts[3]);
+      setShowAlert(true);
+    }, 40000); // Evacuation alert at 40 seconds
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+    };
+  }, [flightInfo.flight, flightInfo.terminal, flightInfo.gate]);
+
+  const closeAlert = () => {
+    setShowAlert(false);
+    setCurrentAlert(null);
+  };
+
   return (
     <div
       style={{
@@ -54,6 +123,87 @@ function App() {
         fontFamily: "Arial, sans-serif",
       }}
     >
+      {/* EMERGENCY ALERT MODAL */}
+      {showAlert && currentAlert && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          animation: 'fadeIn 0.3s ease'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            borderTop: `6px solid ${currentAlert.severity === 'high' ? '#dc3545' : '#ffc107'}`,
+            animation: 'slideUp 0.3s ease'
+          }}>
+            <div style={{ padding: '24px' }}>
+              <h2 style={{ margin: '0 0 16px 0', fontSize: '28px' }}>
+                {currentAlert.title}
+              </h2>
+              
+              <p style={{ fontSize: '16px', lineHeight: '1.6', margin: '0 0 24px 0', color: '#333' }}>
+                {currentAlert.message}
+              </p>
+              
+              <div style={{
+                backgroundColor: '#fff3cd',
+                padding: '16px',
+                borderRadius: '10px',
+                marginBottom: '16px',
+                borderLeft: '4px solid #ffc107'
+              }}>
+                <strong style={{ fontSize: '16px' }}>📢 Recommended Action:</strong>
+                <p style={{ margin: '8px 0 0 0', color: '#856404' }}>{currentAlert.recommendedAction}</p>
+              </div>
+              
+              <div style={{
+                backgroundColor: '#d4edda',
+                padding: '16px',
+                borderRadius: '10px',
+                borderLeft: '4px solid #28a745'
+              }}>
+                <strong style={{ fontSize: '16px' }}>🏠 Safe Area:</strong>
+                <p style={{ margin: '8px 0 0 0', color: '#155724' }}>{currentAlert.safeArea}</p>
+              </div>
+            </div>
+            
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #eee', backgroundColor: '#f8f9fa' }}>
+              <button
+                onClick={closeAlert}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  backgroundColor: currentAlert.severity === 'high' ? '#dc3545' : '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={(e) => e.target.style.opacity = '0.9'}
+                onMouseLeave={(e) => e.target.style.opacity = '1'}
+              >
+                I Understand - Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <h1 style={{ textAlign: "center", fontSize: "42px", marginBottom: "8px" }}>
         ✈️ Air Travel Assist
       </h1>
@@ -207,7 +357,6 @@ function App() {
 
           <div style={{ marginTop: "15px" }}>
             <h4>Saved Locations:</h4>
-
             {favoriteLocations.length === 0 ? (
               <p>No favorite airports saved yet.</p>
             ) : (
@@ -229,7 +378,6 @@ function App() {
           }}
         >
           <h3>📞 Customer Support</h3>
-
           <p><strong>Support Phone:</strong> (800) 555-1234</p>
           <p><strong>Email:</strong> support@airtravelassist.com</p>
           <p><strong>Live Chat:</strong> Available 24/7</p>
@@ -264,6 +412,17 @@ function App() {
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(50px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
