@@ -51,6 +51,7 @@ function App() {
   const [showAlert, setShowAlert] = useState(false);
   const [selectedAirportMap, setSelectedAirportMap] = useState(null);
   const [showMap, setShowMap] = useState(false);
+  const [selectedBoardingPassId, setSelectedBoardingPassId] = useState("BP-001");
   const [liveFlightData, setLiveFlightData] = useState(demoLiveFlights.American);
   const [isLoadingLiveData, setIsLoadingLiveData] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -166,11 +167,68 @@ function App() {
     },
   ];
 
+  const boardingPasses = [
+    {
+      id: "BP-001",
+      tripStatus: "Active Trip",
+      passenger: "Maria Lopez",
+      airline: "American Airlines",
+      flight: "AA123",
+      seat: "14A",
+      group: "3",
+      gate: "B12",
+      terminal: "2",
+      route: "LAX to JFK",
+      date: "Today",
+      boardingTime: "2:30 PM",
+      departureTime: "3:10 PM",
+      confirmation: "ATA8K2",
+      barcode: "AA123-MLOPEZ-14A-LAXJFK",
+    },
+    {
+      id: "BP-002",
+      tripStatus: "Upcoming Trip",
+      passenger: "James Smith",
+      airline: "Delta Airlines",
+      flight: "DL456",
+      seat: "22C",
+      group: "4",
+      gate: "C4",
+      terminal: "1",
+      route: "SAN to SEA",
+      date: "Tomorrow",
+      boardingTime: "4:10 PM",
+      departureTime: "4:55 PM",
+      confirmation: "DL92QP",
+      barcode: "DL456-JSMITH-22C-SANSEA",
+    },
+    {
+      id: "BP-003",
+      tripStatus: "Upcoming Trip",
+      passenger: "Ana Garcia",
+      airline: "United Airlines",
+      flight: "UA789",
+      seat: "9F",
+      group: "2",
+      gate: "A8",
+      terminal: "3",
+      route: "PDX to LAX",
+      date: "Friday",
+      boardingTime: "6:45 PM",
+      departureTime: "7:20 PM",
+      confirmation: "UA7N4X",
+      barcode: "UA789-AGARCIA-9F-PDXLAX",
+    },
+  ];
+
   const flightInfo = airlineFlights[selectedAirline];
   const displayFlightInfo = {
     ...flightInfo,
     ...liveFlightData,
   };
+  const selectedBoardingPass =
+    boardingPasses.find((pass) => pass.id === selectedBoardingPassId) ||
+    boardingPasses[0];
 
   const formatTime = (timeValue) => {
     if (!timeValue) {
@@ -284,6 +342,10 @@ function App() {
   const openAirportMap = (airport) => {
     setSelectedAirportMap(airport);
     setShowMap(true);
+  };
+
+  const openBoardingPass = (passId) => {
+    setSelectedBoardingPassId(passId);
   };
 
   useEffect(() => {
@@ -611,6 +673,100 @@ function App() {
                   </ul>
                 </div>
               )}
+
+              <div style={boardingPassSectionStyle}>
+                <div style={boardingPassHeaderStyle}>
+                  <div>
+                    <h3 style={smallHeadingStyle}>Digital Boarding Passes</h3>
+                    <p style={boardingPassIntroStyle}>
+                      Stored passes for active and upcoming trips.
+                    </p>
+                  </div>
+                  <span style={boardingPassCountStyle}>
+                    {boardingPasses.length} stored
+                  </span>
+                </div>
+
+                <div style={boardingPassListStyle}>
+                  {boardingPasses.map((pass) => (
+                    <button
+                      key={pass.id}
+                      onClick={() => openBoardingPass(pass.id)}
+                      style={
+                        selectedBoardingPass.id === pass.id
+                          ? activeBoardingPassButtonStyle
+                          : boardingPassButtonStyle
+                      }
+                    >
+                      <strong>{pass.flight}</strong>
+                      <span>{pass.route}</span>
+                      <small>{pass.tripStatus}</small>
+                    </button>
+                  ))}
+                </div>
+
+                <div style={boardingPassCardStyle}>
+                  <div style={boardingPassTopRowStyle}>
+                    <div>
+                      <span style={smallLabelStyle}>Passenger</span>
+                      <strong>{selectedBoardingPass.passenger}</strong>
+                    </div>
+                    <span style={tripStatusBadgeStyle}>
+                      {selectedBoardingPass.tripStatus}
+                    </span>
+                  </div>
+
+                  <div style={boardingRouteStyle}>
+                    <strong>{selectedBoardingPass.route}</strong>
+                    <span>{selectedBoardingPass.airline}</span>
+                  </div>
+
+                  <div style={boardingInfoGridStyle}>
+                    <div>
+                      <span style={smallLabelStyle}>Flight</span>
+                      <strong>{selectedBoardingPass.flight}</strong>
+                    </div>
+                    <div>
+                      <span style={smallLabelStyle}>Seat</span>
+                      <strong>{selectedBoardingPass.seat}</strong>
+                    </div>
+                    <div>
+                      <span style={smallLabelStyle}>Group</span>
+                      <strong>{selectedBoardingPass.group}</strong>
+                    </div>
+                    <div>
+                      <span style={smallLabelStyle}>Gate</span>
+                      <strong>{selectedBoardingPass.gate}</strong>
+                    </div>
+                    <div>
+                      <span style={smallLabelStyle}>Terminal</span>
+                      <strong>{selectedBoardingPass.terminal}</strong>
+                    </div>
+                    <div>
+                      <span style={smallLabelStyle}>Boarding</span>
+                      <strong>{selectedBoardingPass.boardingTime}</strong>
+                    </div>
+                  </div>
+
+                  <div style={boardingBarcodeStyle}>
+                    <span style={barcodeLineStyle}></span>
+                    <span style={barcodeLineStyle}></span>
+                    <span style={wideBarcodeLineStyle}></span>
+                    <span style={barcodeLineStyle}></span>
+                    <span style={wideBarcodeLineStyle}></span>
+                    <span style={barcodeLineStyle}></span>
+                    <span style={barcodeLineStyle}></span>
+                    <span style={wideBarcodeLineStyle}></span>
+                    <span style={barcodeLineStyle}></span>
+                    <span style={barcodeLineStyle}></span>
+                  </div>
+
+                  <div style={boardingConfirmationStyle}>
+                    <span>{selectedBoardingPass.barcode}</span>
+                    <strong>Confirmation: {selectedBoardingPass.confirmation}</strong>
+                  </div>
+                </div>
+              </div>
 
               <div style={detailBoxStyle}>
                 <h3 style={smallHeadingStyle}>Favorite Airports</h3>
@@ -992,6 +1148,134 @@ const detailBoxStyle = {
   borderRadius: "14px",
   border: "1px solid #e2e8f0",
   marginBottom: "16px",
+};
+
+const boardingPassSectionStyle = {
+  ...detailBoxStyle,
+  backgroundColor: "#f8fbff",
+};
+
+const boardingPassHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "12px",
+};
+
+const boardingPassIntroStyle = {
+  margin: "4px 0 14px",
+  color: "#64748b",
+};
+
+const boardingPassCountStyle = {
+  backgroundColor: "#dbeafe",
+  color: "#1e3a8a",
+  borderRadius: "999px",
+  padding: "6px 10px",
+  fontSize: "13px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+};
+
+const boardingPassListStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 1fr)",
+  gap: "8px",
+  marginBottom: "14px",
+};
+
+const boardingPassButtonStyle = {
+  padding: "10px",
+  borderRadius: "10px",
+  border: "1px solid #cbd5e1",
+  backgroundColor: "white",
+  color: "#1e293b",
+  cursor: "pointer",
+  textAlign: "left",
+  display: "flex",
+  flexDirection: "column",
+  gap: "3px",
+};
+
+const activeBoardingPassButtonStyle = {
+  ...boardingPassButtonStyle,
+  border: "1px solid #1e3a5f",
+  backgroundColor: "#e0f2fe",
+};
+
+const boardingPassCardStyle = {
+  backgroundColor: "white",
+  border: "1px solid #bfdbfe",
+  borderRadius: "14px",
+  padding: "16px",
+  boxShadow: "0 4px 14px rgba(15, 23, 42, 0.08)",
+};
+
+const boardingPassTopRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "12px",
+  marginBottom: "14px",
+};
+
+const tripStatusBadgeStyle = {
+  backgroundColor: "#dcfce7",
+  color: "#166534",
+  borderRadius: "999px",
+  padding: "6px 10px",
+  fontSize: "13px",
+  fontWeight: "bold",
+  alignSelf: "flex-start",
+};
+
+const boardingRouteStyle = {
+  borderTop: "1px dashed #cbd5e1",
+  borderBottom: "1px dashed #cbd5e1",
+  padding: "14px 0",
+  marginBottom: "14px",
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "12px",
+  color: "#1e293b",
+};
+
+const boardingInfoGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 1fr)",
+  gap: "12px",
+  marginBottom: "16px",
+};
+
+const boardingBarcodeStyle = {
+  height: "72px",
+  backgroundColor: "#f8fafc",
+  borderRadius: "10px",
+  border: "1px solid #e2e8f0",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "5px",
+  marginBottom: "10px",
+};
+
+const barcodeLineStyle = {
+  width: "4px",
+  height: "48px",
+  backgroundColor: "#0f172a",
+  display: "block",
+};
+
+const wideBarcodeLineStyle = {
+  ...barcodeLineStyle,
+  width: "9px",
+};
+
+const boardingConfirmationStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "12px",
+  color: "#334155",
+  fontSize: "13px",
 };
 
 const staffSectionStyle = {
