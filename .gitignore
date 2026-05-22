@@ -1,0 +1,17 @@
+
+# Node modules - DO NOT COMMIT
+node_modules/
+app/node_modules/
+**/node_modules/
+
+# Cache files
+.cache/
+*.cache
+
+# Environment files
+.env
+.env.local
+
+# Build files
+build/
+dist/
