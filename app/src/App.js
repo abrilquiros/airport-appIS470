@@ -62,6 +62,8 @@ function App() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [boardingNotifications, setBoardingNotifications] = useState([]);
   const [sentNotifications, setSentNotifications] = useState([]);
+  const [announcement, setAnnouncement] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
 
   const airports = [
     {
@@ -87,7 +89,7 @@ function App() {
     {
       code: "SEA",
       name: "Seattle-Tacoma International Airport",
-      map: "https://www.google.com/maps?q=SEA+Airport&output=embed",
+      map: "https://maps.flysea.org/?lang=en&s=eyJtYXBSZW5kZXJlciI6eyJ2cCI6eyJsYXQiOjQ3LjQ0MzY3LCJsbmciOi0xMjIuMzAyMzA3LCJ6b29tIjoxNC43OTAzNywiYmVhcmluZyI6MCwicGl0Y2giOjB9LCJvcmQiOjV9fQ%3D%3D",
     },
   ];
 
@@ -561,6 +563,32 @@ function App() {
           </div>
         </div>
       )}
+
+return (
+  <div style={pageStyle}>
+
+    {broadcastMessage && (
+      <div
+        style={{
+          backgroundColor: "#fef3c7",
+          border: "2px solid #f59e0b",
+          padding: "18px",
+          borderRadius: "12px",
+          marginBottom: "20px",
+          textAlign: "center",
+          fontWeight: "bold",
+          color: "#92400e",
+        }}
+      >
+        📢 AIRPORT ANNOUNCEMENT
+
+        <div style={{ marginTop: "10px", fontWeight: "normal" }}>
+          {broadcastMessage}
+        </div>
+      </div>
+    )}
+
+    <header style={headerStyle}></header>
 
       <header style={headerStyle}>
         <h1 style={titleStyle}>Air Travel Assist</h1>
@@ -1099,7 +1127,52 @@ function App() {
                     <strong>Message:</strong> {selectedInquiry.message}
                   </p>
                 </div>
+
+                
               )}
+
+              <div
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "20px",
+                  borderRadius: "14px",
+                  marginTop: "20px",
+                  border: "1px solid #f9a8d4",
+                }}
+              >
+                <h3 style={{ marginTop: 0 }}>📢 Airport Announcement System</h3>
+
+                <textarea
+                  value={announcement}
+                  onChange={(e) => setAnnouncement(e.target.value)}
+                  placeholder="Enter airport announcement..."
+                  style={{
+                    width: "100%",
+                    minHeight: "100px",
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "1px solid #ccc",
+                    marginBottom: "12px",
+                    fontFamily: "Arial, sans-serif",
+                  }}
+                />
+
+                <button
+                  onClick={() => setBroadcastMessage(announcement)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "none",
+                    backgroundColor: "#be185d",
+                    color: "white",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Broadcast Announcement
+                </button>
+              </div>
             </div>
           )}
         </section>
