@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import PassengerNotifications from "./components/PassengerNotifications";
-import BoardingNotificationPanel from "./components/BoardingNotificationPanel";
 
 const AVIATIONSTACK_API_KEY = process.env.REACT_APP_AVIATIONSTACK_API_KEY;
 const REFRESH_INTERVAL_MS = 60000;
@@ -54,14 +52,11 @@ function App() {
   const [selectedAirportMap, setSelectedAirportMap] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [selectedBoardingPassId, setSelectedBoardingPassId] = useState("BP-001");
-  const [selectedWeatherAirport, setSelectedWeatherAirport] = useState("LAX");
   const [liveFlightData, setLiveFlightData] = useState(demoLiveFlights.American);
   const [isLoadingLiveData, setIsLoadingLiveData] = useState(false);
   const [apiError, setApiError] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [boardingNotifications, setBoardingNotifications] = useState([]);
-  const [sentNotifications, setSentNotifications] = useState([]);
 
   const airports = [
     {
@@ -148,54 +143,6 @@ function App() {
     },
   };
 
-  const airportWeather = {
-    LAX: {
-      temperature: "68 F",
-      condition: "Partly Cloudy",
-      wind: "9 mph W",
-      visibility: "10 mi",
-      delayRisk: "Low",
-      alert: "No major weather alerts. Normal travel conditions expected.",
-      updated: "Updated 10 minutes ago",
-    },
-    SAN: {
-      temperature: "66 F",
-      condition: "Coastal Fog",
-      wind: "7 mph SW",
-      visibility: "6 mi",
-      delayRisk: "Moderate",
-      alert: "Morning fog may slow early departures. Check gate updates before boarding.",
-      updated: "Updated 8 minutes ago",
-    },
-    JFK: {
-      temperature: "54 F",
-      condition: "Light Rain",
-      wind: "14 mph NE",
-      visibility: "5 mi",
-      delayRisk: "Moderate",
-      alert: "Rain may affect ramp operations. Allow extra connection time.",
-      updated: "Updated 12 minutes ago",
-    },
-    PDX: {
-      temperature: "49 F",
-      condition: "Rain Showers",
-      wind: "11 mph S",
-      visibility: "7 mi",
-      delayRisk: "Moderate",
-      alert: "Wet runways and showers may cause minor schedule adjustments.",
-      updated: "Updated 15 minutes ago",
-    },
-    SEA: {
-      temperature: "51 F",
-      condition: "Overcast",
-      wind: "10 mph SW",
-      visibility: "8 mi",
-      delayRisk: "Low",
-      alert: "Cloudy conditions with no active airport weather alert.",
-      updated: "Updated 6 minutes ago",
-    },
-  };
-
   const customerInquiries = [
     {
       id: 1,
@@ -219,30 +166,6 @@ function App() {
       message: "Where is my updated gate?",
     },
   ];
-
-  const notificationTypes = {
-    boarding_start: {
-      label: "Boarding Started",
-      defaultMessage: "Boarding has begun for your flight.",
-    },
-    boarding_delay: {
-      label: "Boarding Delayed",
-      defaultMessage: "Boarding has been delayed. Please wait for further updates.",
-    },
-    gate_change: {
-      label: "Gate Change",
-      defaultMessage: "Your gate has been changed.",
-    },
-    final_call: {
-      label: "Final Call",
-      defaultMessage:
-        "Final boarding call. Please proceed to your gate immediately.",
-    },
-    status_update: {
-      label: "Status Update",
-      defaultMessage: "Your flight status has been updated.",
-    },
-  };
 
   const boardingPasses = [
     {
@@ -306,10 +229,6 @@ function App() {
   const selectedBoardingPass =
     boardingPasses.find((pass) => pass.id === selectedBoardingPassId) ||
     boardingPasses[0];
-  const selectedWeatherAirportInfo =
-    airports.find((airport) => airport.code === selectedWeatherAirport) ||
-    airports[0];
-  const selectedWeather = airportWeather[selectedWeatherAirport];
 
   const formatTime = (timeValue) => {
     if (!timeValue) {
@@ -427,29 +346,6 @@ function App() {
 
   const openBoardingPass = (passId) => {
     setSelectedBoardingPassId(passId);
-  };
-
-  const handleSendBoardingNotification = (notification, flight) => {
-    const newNotification = {
-      id: notification.id || Date.now(),
-      flight,
-      notification,
-      read: false,
-    };
-
-    setSentNotifications([notification, ...sentNotifications]);
-    setBoardingNotifications([newNotification, ...boardingNotifications]);
-    alert(`Notification sent to passengers on ${flight} flight.`);
-  };
-
-  const handleMarkNotificationRead = (notificationId) => {
-    setBoardingNotifications(
-      boardingNotifications.map((notification) =>
-        notification.id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      )
-    );
   };
 
   useEffect(() => {
@@ -778,63 +674,6 @@ function App() {
                 </div>
               )}
 
-              <div style={weatherSectionStyle}>
-                <div style={weatherHeaderStyle}>
-                  <div>
-                    <h3 style={smallHeadingStyle}>Airport Weather</h3>
-                    <p style={weatherIntroStyle}>
-                      Current conditions and alerts for selected airports.
-                    </p>
-                  </div>
-                  <span style={weatherUpdatedStyle}>{selectedWeather.updated}</span>
-                </div>
-
-                <label style={labelStyle}>Select Airport</label>
-                <select
-                  value={selectedWeatherAirport}
-                  onChange={(e) => setSelectedWeatherAirport(e.target.value)}
-                  style={inputStyle}
-                >
-                  {airports.map((airport) => (
-                    <option key={airport.code} value={airport.code}>
-                      {airport.code} - {airport.name}
-                    </option>
-                  ))}
-                </select>
-
-                <div style={weatherSummaryStyle}>
-                  <div>
-                    <span style={smallLabelStyle}>Airport</span>
-                    <strong>{selectedWeatherAirportInfo.name}</strong>
-                  </div>
-                  <div style={temperatureStyle}>{selectedWeather.temperature}</div>
-                </div>
-
-                <div style={weatherGridStyle}>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Condition</span>
-                    <strong>{selectedWeather.condition}</strong>
-                  </div>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Wind</span>
-                    <strong>{selectedWeather.wind}</strong>
-                  </div>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Visibility</span>
-                    <strong>{selectedWeather.visibility}</strong>
-                  </div>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Delay Risk</span>
-                    <strong>{selectedWeather.delayRisk}</strong>
-                  </div>
-                </div>
-
-                <div style={weatherAlertStyle}>
-                  <span style={smallLabelStyle}>Weather Alert</span>
-                  <strong>{selectedWeather.alert}</strong>
-                </div>
-              </div>
-
               <div style={boardingPassSectionStyle}>
                 <div style={boardingPassHeaderStyle}>
                   <div>
@@ -927,14 +766,6 @@ function App() {
                     <strong>Confirmation: {selectedBoardingPass.confirmation}</strong>
                   </div>
                 </div>
-              </div>
-
-              <div style={detailBoxStyle}>
-                <h3 style={smallHeadingStyle}>Passenger Notifications</h3>
-                <PassengerNotifications
-                  notifications={boardingNotifications}
-                  onMarkRead={handleMarkNotificationRead}
-                />
               </div>
 
               <div style={detailBoxStyle}>
@@ -1048,27 +879,6 @@ function App() {
               <p style={staffSubtitleStyle}>
                 Internal staff view for reviewing passenger inquiries.
               </p>
-
-              <div style={staffToolBoxStyle}>
-                <h3 style={smallHeadingStyle}>Boarding Notifications</h3>
-                <p style={staffToolTextStyle}>
-                  Send boarding, delay, gate change, final call, and status
-                  updates to passengers.
-                </p>
-                <BoardingNotificationPanel
-                  onSendNotification={handleSendBoardingNotification}
-                />
-                <div style={notificationTypeListStyle}>
-                  {Object.entries(notificationTypes).map(([key, type]) => (
-                    <span key={key} style={notificationTypeStyle}>
-                      {type.label}
-                    </span>
-                  ))}
-                </div>
-                <p style={staffToolTextStyle}>
-                  Sent notifications: {sentNotifications.length}
-                </p>
-              </div>
 
               {customerInquiries.map((inquiry) => (
                 <button
@@ -1340,75 +1150,6 @@ const detailBoxStyle = {
   marginBottom: "16px",
 };
 
-const weatherSectionStyle = {
-  ...detailBoxStyle,
-  backgroundColor: "#f0fdfa",
-  border: "1px solid #99f6e4",
-};
-
-const weatherHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
-  gap: "12px",
-};
-
-const weatherIntroStyle = {
-  margin: "4px 0 14px",
-  color: "#475569",
-};
-
-const weatherUpdatedStyle = {
-  backgroundColor: "#ccfbf1",
-  color: "#115e59",
-  borderRadius: "999px",
-  padding: "6px 10px",
-  fontSize: "13px",
-  fontWeight: "bold",
-  whiteSpace: "nowrap",
-};
-
-const weatherSummaryStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  backgroundColor: "white",
-  border: "1px solid #ccfbf1",
-  borderRadius: "12px",
-  padding: "14px",
-  marginBottom: "12px",
-};
-
-const temperatureStyle = {
-  fontSize: "34px",
-  fontWeight: "bold",
-  color: "#0f766e",
-};
-
-const weatherGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "10px",
-  marginBottom: "12px",
-};
-
-const weatherInfoBoxStyle = {
-  backgroundColor: "white",
-  border: "1px solid #ccfbf1",
-  borderRadius: "10px",
-  padding: "12px",
-};
-
-const weatherAlertStyle = {
-  backgroundColor: "#fef3c7",
-  border: "1px solid #f59e0b",
-  color: "#78350f",
-  borderRadius: "10px",
-  padding: "12px",
-  lineHeight: "1.5",
-};
-
 const boardingPassSectionStyle = {
   ...detailBoxStyle,
   backgroundColor: "#f8fbff",
@@ -1551,36 +1292,6 @@ const staffTitleStyle = {
 
 const staffSubtitleStyle = {
   color: "#9f1239",
-};
-
-const staffToolBoxStyle = {
-  backgroundColor: "white",
-  border: "1px solid #f9a8d4",
-  borderRadius: "14px",
-  padding: "16px",
-  marginBottom: "16px",
-};
-
-const staffToolTextStyle = {
-  color: "#9f1239",
-  marginTop: 0,
-};
-
-const notificationTypeListStyle = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "8px",
-  marginTop: "12px",
-  marginBottom: "10px",
-};
-
-const notificationTypeStyle = {
-  backgroundColor: "#fce7f3",
-  color: "#9d174d",
-  borderRadius: "999px",
-  padding: "6px 10px",
-  fontSize: "13px",
-  fontWeight: "bold",
 };
 
 const buttonWrapStyle = {
