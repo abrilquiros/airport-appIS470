@@ -89,7 +89,7 @@ function App() {
     {
       code: "SEA",
       name: "Seattle-Tacoma International Airport",
-      map: "https://maps.flysea.org/?lang=en&s=eyJtYXBSZW5kZXJlciI6eyJ2cCI6eyJsYXQiOjQ3LjQ0MzY3LCJsbmciOi0xMjIuMzAyMzA3LCJ6b29tIjoxNC43OTAzNywiYmVhcmluZyI6MCwicGl0Y2giOjB9LCJvcmQiOjV9fQ%3D%3D",
+      map: "https://maps.flysea.org",
     },
   ];
 
