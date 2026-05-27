@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import PassengerNotifications from "./components/PassengerNotifications";
-import BoardingNotificationPanel from "./components/BoardingNotificationPanel";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const AVIATIONSTACK_API_KEY = process.env.REACT_APP_AVIATIONSTACK_API_KEY;
 const REFRESH_INTERVAL_MS = 60000;
@@ -12,6 +10,7 @@ const demoLiveFlights = {
     gate: "B12",
     terminal: "2",
     boarding: "2:30 PM",
+    baggageClaim: "Carousel 5",
     delay: "No delay reported",
     departureAirport: "Los Angeles International Airport",
     arrivalAirport: "John F. Kennedy International Airport",
@@ -23,6 +22,7 @@ const demoLiveFlights = {
     gate: "C4",
     terminal: "1",
     boarding: "4:10 PM",
+    baggageClaim: "Carousel 9",
     delay: "25 minutes",
     departureAirport: "San Diego International Airport",
     arrivalAirport: "Seattle-Tacoma International Airport",
@@ -34,12 +34,322 @@ const demoLiveFlights = {
     gate: "A8",
     terminal: "3",
     boarding: "6:45 PM",
+    baggageClaim: "Carousel 2",
     delay: "No delay reported",
     departureAirport: "Portland International Airport",
     arrivalAirport: "Los Angeles International Airport",
     updatedBy: "Demo fallback data",
   },
 };
+
+const airports = [
+  {
+    code: "LAX",
+    name: "Los Angeles International Airport",
+    map: "https://www.google.com/maps?q=LAX+Airport&output=embed",
+  },
+  {
+    code: "SAN",
+    name: "San Diego International Airport",
+    map: "https://www.google.com/maps?q=SAN+Airport&output=embed",
+  },
+  {
+    code: "JFK",
+    name: "John F. Kennedy International Airport",
+    map: "https://www.google.com/maps?q=JFK+Airport&output=embed",
+  },
+  {
+    code: "PDX",
+    name: "Portland International Airport",
+    map: "https://www.google.com/maps?q=PDX+Airport&output=embed",
+  },
+  {
+    code: "SEA",
+    name: "Seattle-Tacoma International Airport",
+    map: "https://www.google.com/maps?q=SEA+Airport&output=embed",
+  },
+];
+
+const airlineFlights = {
+  American: {
+    flight: "AA123",
+    status: "On Time",
+    gate: "B12",
+    terminal: "2",
+    boarding: "2:30 PM",
+    baggageClaim: "Carousel 5",
+    prices: {
+      Budget: "$120",
+      Standard: "$280",
+      Premium: "$540",
+    },
+    policy: [
+      "1 free carry-on bag included",
+      "Check-in closes 45 minutes before departure",
+      "Face covering optional during travel",
+    ],
+  },
+  Delta: {
+    flight: "DL456",
+    status: "Delayed",
+    gate: "C4",
+    terminal: "1",
+    boarding: "4:10 PM",
+    baggageClaim: "Carousel 9",
+    prices: {
+      Budget: "$160",
+      Standard: "$320",
+      Premium: "$610",
+    },
+    policy: [
+      "Free Wi-Fi available on select flights",
+      "Boarding begins 40 minutes before departure",
+      "Changes allowed with applicable fare difference",
+    ],
+  },
+  United: {
+    flight: "UA789",
+    status: "Boarding Soon",
+    gate: "A8",
+    terminal: "3",
+    boarding: "6:45 PM",
+    baggageClaim: "Carousel 2",
+    prices: {
+      Budget: "$145",
+      Standard: "$300",
+      Premium: "$575",
+    },
+    policy: [
+      "Basic Economy has limited seat selection",
+      "Carry-on allowed for most fares",
+      "Arrive at gate at least 30 minutes before departure",
+    ],
+  },
+};
+
+const airportWeather = {
+  LAX: {
+    temperature: "68 F",
+    condition: "Partly Cloudy",
+    wind: "9 mph W",
+    visibility: "10 mi",
+    delayRisk: "Low",
+    alert: "No major weather alerts. Normal travel conditions expected.",
+    updated: "Updated 10 minutes ago",
+  },
+  SAN: {
+    temperature: "66 F",
+    condition: "Coastal Fog",
+    wind: "7 mph SW",
+    visibility: "6 mi",
+    delayRisk: "Moderate",
+    alert: "Morning fog may slow early departures. Check gate updates before boarding.",
+    updated: "Updated 8 minutes ago",
+  },
+  JFK: {
+    temperature: "54 F",
+    condition: "Light Rain",
+    wind: "14 mph NE",
+    visibility: "5 mi",
+    delayRisk: "Moderate",
+    alert: "Rain may affect ramp operations. Allow extra connection time.",
+    updated: "Updated 12 minutes ago",
+  },
+  PDX: {
+    temperature: "49 F",
+    condition: "Rain Showers",
+    wind: "11 mph S",
+    visibility: "7 mi",
+    delayRisk: "Moderate",
+    alert: "Wet runways and showers may cause minor schedule adjustments.",
+    updated: "Updated 15 minutes ago",
+  },
+  SEA: {
+    temperature: "51 F",
+    condition: "Overcast",
+    wind: "10 mph SW",
+    visibility: "8 mi",
+    delayRisk: "Low",
+    alert: "Cloudy conditions with no active airport weather alert.",
+    updated: "Updated 6 minutes ago",
+  },
+};
+
+const customerInquiries = [
+  {
+    id: 1,
+    passenger: "Maria Lopez",
+    type: "Baggage",
+    urgency: "High",
+    message: "My luggage did not arrive at baggage claim.",
+  },
+  {
+    id: 2,
+    passenger: "James Smith",
+    type: "Flight Status",
+    urgency: "Medium",
+    message: "Is my flight still delayed?",
+  },
+  {
+    id: 3,
+    passenger: "Ana Garcia",
+    type: "Gate",
+    urgency: "Low",
+    message: "Where is my updated gate?",
+  },
+];
+
+const boardingPasses = [
+  {
+    id: "BP-001",
+    tripStatus: "Active Trip",
+    passenger: "Maria Lopez",
+    airline: "American Airlines",
+    flight: "AA123",
+    seat: "14A",
+    group: "3",
+    gate: "B12",
+    terminal: "2",
+    route: "LAX to JFK",
+    date: "Today",
+    boardingTime: "2:30 PM",
+    departureTime: "3:10 PM",
+    confirmation: "ATA8K2",
+    barcode: "AA123-MLOPEZ-14A-LAXJFK",
+  },
+  {
+    id: "BP-002",
+    tripStatus: "Upcoming Trip",
+    passenger: "James Smith",
+    airline: "Delta Airlines",
+    flight: "DL456",
+    seat: "22C",
+    group: "4",
+    gate: "C4",
+    terminal: "1",
+    route: "SAN to SEA",
+    date: "Tomorrow",
+    boardingTime: "4:10 PM",
+    departureTime: "4:55 PM",
+    confirmation: "DL92QP",
+    barcode: "DL456-JSMITH-22C-SANSEA",
+  },
+  {
+    id: "BP-003",
+    tripStatus: "Upcoming Trip",
+    passenger: "Ana Garcia",
+    airline: "United Airlines",
+    flight: "UA789",
+    seat: "9F",
+    group: "2",
+    gate: "A8",
+    terminal: "3",
+    route: "PDX to LAX",
+    date: "Friday",
+    boardingTime: "6:45 PM",
+    departureTime: "7:20 PM",
+    confirmation: "UA7N4X",
+    barcode: "UA789-AGARCIA-9F-PDXLAX",
+  },
+];
+
+const notificationTypes = {
+  boarding_start: {
+    label: "Boarding Started",
+    defaultMessage: "Boarding has begun for your flight.",
+  },
+  boarding_delay: {
+    label: "Boarding Delayed",
+    defaultMessage: "Boarding has been delayed. Please wait for further updates.",
+  },
+  gate_change: {
+    label: "Gate Change",
+    defaultMessage: "Your gate has been changed.",
+  },
+  final_call: {
+    label: "Final Call",
+    defaultMessage: "Final boarding call. Please proceed to your gate immediately.",
+  },
+  status_update: {
+    label: "Status Update",
+    defaultMessage: "Your flight status has been updated.",
+  },
+};
+
+function PassengerNotifications({ notifications, onMarkRead }) {
+  if (notifications.length === 0) {
+    return <p>No passenger notifications yet.</p>;
+  }
+
+  return (
+    <div style={notificationListStyle}>
+      {notifications.map((item) => (
+        <div
+          key={item.id}
+          style={item.read ? readNotificationStyle : unreadNotificationStyle}
+        >
+          <strong>{item.notification.title}</strong>
+          <p style={notificationMessageStyle}>{item.notification.message}</p>
+          <span style={smallLabelStyle}>Flight {item.flight}</span>
+          {!item.read && (
+            <button
+              onClick={() => onMarkRead(item.id)}
+              style={markReadButtonStyle}
+            >
+              Mark Read
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BoardingNotificationPanel({ onSendNotification, selectedFlight }) {
+  const [type, setType] = useState("boarding_start");
+  const [message, setMessage] = useState(notificationTypes.boarding_start.defaultMessage);
+
+  const handleTypeChange = (event) => {
+    const nextType = event.target.value;
+    setType(nextType);
+    setMessage(notificationTypes[nextType].defaultMessage);
+  };
+
+  const sendNotification = () => {
+    const notification = {
+      id: Date.now(),
+      type,
+      title: notificationTypes[type].label,
+      message,
+      sentAt: new Date().toLocaleTimeString(),
+    };
+
+    onSendNotification(notification, selectedFlight);
+  };
+
+  return (
+    <div>
+      <label style={labelStyle}>Notification Type</label>
+      <select value={type} onChange={handleTypeChange} style={inputStyle}>
+        {Object.entries(notificationTypes).map(([key, item]) => (
+          <option key={key} value={key}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+
+      <textarea
+        value={message}
+        onChange={(event) => setMessage(event.target.value)}
+        style={textAreaStyle}
+      />
+
+      <button onClick={sendNotification} style={successButtonStyle}>
+        Send Boarding Notification
+      </button>
+    </div>
+  );
+}
 
 function App() {
   const [activeSection, setActiveSection] = useState("traveler");
@@ -65,246 +375,15 @@ function App() {
   const [announcement, setAnnouncement] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
 
-  const airports = [
-    {
-      code: "LAX",
-      name: "Los Angeles International Airport",
-      map: "https://www.google.com/maps?q=LAX+Airport&output=embed",
-    },
-    {
-      code: "SAN",
-      name: "San Diego International Airport",
-      map: "https://www.google.com/maps?q=SAN+Airport&output=embed",
-    },
-    {
-      code: "JFK",
-      name: "John F. Kennedy International Airport",
-      map: "https://www.google.com/maps?q=JFK+Airport&output=embed",
-    },
-    {
-      code: "PDX",
-      name: "Portland International Airport",
-      map: "https://www.google.com/maps?q=PDX+Airport&output=embed",
-    },
-    {
-      code: "SEA",
-      name: "Seattle-Tacoma International Airport",
-      map: "https://maps.flysea.org",
-    },
-  ];
-
-  const airlineFlights = {
-    American: {
-      flight: "AA123",
-      status: "On Time",
-      gate: "B12",
-      terminal: "2",
-      boarding: "2:30 PM",
-      baggageClaim: "Carousel 5",
-      prices: {
-        Budget: "$120",
-        Standard: "$280",
-        Premium: "$540",
-      },
-      policy: [
-        "1 free carry-on bag included",
-        "Check-in closes 45 minutes before departure",
-        "Face covering optional during travel",
-      ],
-    },
-    Delta: {
-      flight: "DL456",
-      status: "Delayed",
-      gate: "C4",
-      terminal: "1",
-      boarding: "4:10 PM",
-      baggageClaim: "Carousel 9",
-      prices: {
-        Budget: "$160",
-        Standard: "$320",
-        Premium: "$610",
-      },
-      policy: [
-        "Free Wi-Fi available on select flights",
-        "Boarding begins 40 minutes before departure",
-        "Changes allowed with applicable fare difference",
-      ],
-    },
-    United: {
-      flight: "UA789",
-      status: "Boarding Soon",
-      gate: "A8",
-      terminal: "3",
-      boarding: "6:45 PM",
-      baggageClaim: "Carousel 2",
-      prices: {
-        Budget: "$145",
-        Standard: "$300",
-        Premium: "$575",
-      },
-      policy: [
-        "Basic Economy has limited seat selection",
-        "Carry-on allowed for most fares",
-        "Arrive at gate at least 30 minutes before departure",
-      ],
-    },
-  };
-
-  const airportWeather = {
-    LAX: {
-      temperature: "68 F",
-      condition: "Partly Cloudy",
-      wind: "9 mph W",
-      visibility: "10 mi",
-      delayRisk: "Low",
-      alert: "No major weather alerts. Normal travel conditions expected.",
-      updated: "Updated 10 minutes ago",
-    },
-    SAN: {
-      temperature: "66 F",
-      condition: "Coastal Fog",
-      wind: "7 mph SW",
-      visibility: "6 mi",
-      delayRisk: "Moderate",
-      alert: "Morning fog may slow early departures. Check gate updates before boarding.",
-      updated: "Updated 8 minutes ago",
-    },
-    JFK: {
-      temperature: "54 F",
-      condition: "Light Rain",
-      wind: "14 mph NE",
-      visibility: "5 mi",
-      delayRisk: "Moderate",
-      alert: "Rain may affect ramp operations. Allow extra connection time.",
-      updated: "Updated 12 minutes ago",
-    },
-    PDX: {
-      temperature: "49 F",
-      condition: "Rain Showers",
-      wind: "11 mph S",
-      visibility: "7 mi",
-      delayRisk: "Moderate",
-      alert: "Wet runways and showers may cause minor schedule adjustments.",
-      updated: "Updated 15 minutes ago",
-    },
-    SEA: {
-      temperature: "51 F",
-      condition: "Overcast",
-      wind: "10 mph SW",
-      visibility: "8 mi",
-      delayRisk: "Low",
-      alert: "Cloudy conditions with no active airport weather alert.",
-      updated: "Updated 6 minutes ago",
-    },
-  };
-
-  const customerInquiries = [
-    {
-      id: 1,
-      passenger: "Maria Lopez",
-      type: "Baggage",
-      urgency: "High",
-      message: "My luggage did not arrive at baggage claim.",
-    },
-    {
-      id: 2,
-      passenger: "James Smith",
-      type: "Flight Status",
-      urgency: "Medium",
-      message: "Is my flight still delayed?",
-    },
-    {
-      id: 3,
-      passenger: "Ana Garcia",
-      type: "Gate",
-      urgency: "Low",
-      message: "Where is my updated gate?",
-    },
-  ];
-
-  const notificationTypes = {
-    boarding_start: {
-      label: "Boarding Started",
-      defaultMessage: "Boarding has begun for your flight.",
-    },
-    boarding_delay: {
-      label: "Boarding Delayed",
-      defaultMessage: "Boarding has been delayed. Please wait for further updates.",
-    },
-    gate_change: {
-      label: "Gate Change",
-      defaultMessage: "Your gate has been changed.",
-    },
-    final_call: {
-      label: "Final Call",
-      defaultMessage:
-        "Final boarding call. Please proceed to your gate immediately.",
-    },
-    status_update: {
-      label: "Status Update",
-      defaultMessage: "Your flight status has been updated.",
-    },
-  };
-
-  const boardingPasses = [
-    {
-      id: "BP-001",
-      tripStatus: "Active Trip",
-      passenger: "Maria Lopez",
-      airline: "American Airlines",
-      flight: "AA123",
-      seat: "14A",
-      group: "3",
-      gate: "B12",
-      terminal: "2",
-      route: "LAX to JFK",
-      date: "Today",
-      boardingTime: "2:30 PM",
-      departureTime: "3:10 PM",
-      confirmation: "ATA8K2",
-      barcode: "AA123-MLOPEZ-14A-LAXJFK",
-    },
-    {
-      id: "BP-002",
-      tripStatus: "Upcoming Trip",
-      passenger: "James Smith",
-      airline: "Delta Airlines",
-      flight: "DL456",
-      seat: "22C",
-      group: "4",
-      gate: "C4",
-      terminal: "1",
-      route: "SAN to SEA",
-      date: "Tomorrow",
-      boardingTime: "4:10 PM",
-      departureTime: "4:55 PM",
-      confirmation: "DL92QP",
-      barcode: "DL456-JSMITH-22C-SANSEA",
-    },
-    {
-      id: "BP-003",
-      tripStatus: "Upcoming Trip",
-      passenger: "Ana Garcia",
-      airline: "United Airlines",
-      flight: "UA789",
-      seat: "9F",
-      group: "2",
-      gate: "A8",
-      terminal: "3",
-      route: "PDX to LAX",
-      date: "Friday",
-      boardingTime: "6:45 PM",
-      departureTime: "7:20 PM",
-      confirmation: "UA7N4X",
-      barcode: "UA789-AGARCIA-9F-PDXLAX",
-    },
-  ];
-
   const flightInfo = airlineFlights[selectedAirline];
-  const displayFlightInfo = {
-    ...flightInfo,
-    ...liveFlightData,
-  };
+  const displayFlightInfo = useMemo(
+    () => ({
+      ...flightInfo,
+      ...liveFlightData,
+    }),
+    [flightInfo, liveFlightData]
+  );
+
   const selectedBoardingPass =
     boardingPasses.find((pass) => pass.id === selectedBoardingPassId) ||
     boardingPasses[0];
@@ -329,32 +408,38 @@ function App() {
     });
   };
 
-  const buildFallbackFlight = () => ({
-    ...demoLiveFlights[selectedAirline],
-    updatedBy: AVIATIONSTACK_API_KEY
-      ? "Fallback after API issue"
-      : "Demo fallback data - add an API key for live results",
-  });
+  const buildFallbackFlight = useCallback(
+    () => ({
+      ...demoLiveFlights[selectedAirline],
+      updatedBy: AVIATIONSTACK_API_KEY
+        ? "Fallback after API issue"
+        : "Demo fallback data - add an API key for live results",
+    }),
+    [selectedAirline]
+  );
 
-  const mapAviationstackFlight = (flight) => {
-    const departure = flight.departure || {};
-    const arrival = flight.arrival || {};
+  const mapAviationstackFlight = useCallback(
+    (flight) => {
+      const departure = flight.departure || {};
+      const arrival = flight.arrival || {};
 
-    return {
-      flight: flight.flight?.iata || flightInfo.flight,
-      status: flight.flight_status || flightInfo.status,
-      gate: departure.gate || flightInfo.gate,
-      terminal: departure.terminal || flightInfo.terminal,
-      boarding: formatTime(departure.estimated || departure.scheduled),
-      delay: departure.delay ? `${departure.delay} minutes` : "No delay reported",
-      baggageClaim: arrival.baggage || flightInfo.baggageClaim,
-      departureAirport: departure.airport || "Departure airport not available",
-      arrivalAirport: arrival.airport || "Arrival airport not available",
-      updatedBy: "Aviationstack live API",
-    };
-  };
+      return {
+        flight: flight.flight?.iata || flightInfo.flight,
+        status: flight.flight_status || flightInfo.status,
+        gate: departure.gate || flightInfo.gate,
+        terminal: departure.terminal || flightInfo.terminal,
+        boarding: formatTime(departure.estimated || departure.scheduled),
+        delay: departure.delay ? `${departure.delay} minutes` : "No delay reported",
+        baggageClaim: arrival.baggage || flightInfo.baggageClaim,
+        departureAirport: departure.airport || "Departure airport not available",
+        arrivalAirport: arrival.airport || "Arrival airport not available",
+        updatedBy: "Aviationstack live API",
+      };
+    },
+    [flightInfo]
+  );
 
-  const fetchLiveFlightData = async () => {
+  const fetchLiveFlightData = useCallback(async () => {
     setIsLoadingLiveData(true);
     setApiError("");
 
@@ -397,11 +482,11 @@ function App() {
     } finally {
       setIsLoadingLiveData(false);
     }
-  };
+  }, [buildFallbackFlight, flightInfo.flight, mapAviationstackFlight]);
 
   useEffect(() => {
     fetchLiveFlightData();
-  }, [selectedAirline]);
+  }, [fetchLiveFlightData]);
 
   useEffect(() => {
     if (!autoRefresh) {
@@ -410,7 +495,57 @@ function App() {
 
     const refreshTimer = setInterval(fetchLiveFlightData, REFRESH_INTERVAL_MS);
     return () => clearInterval(refreshTimer);
-  }, [autoRefresh, selectedAirline]);
+  }, [autoRefresh, fetchLiveFlightData]);
+
+  useEffect(() => {
+    const emergencyAlerts = [
+      {
+        title: "Security Alert",
+        message: `Security incident reported at Terminal ${displayFlightInfo.terminal}. Authorities are responding.`,
+        severity: "high",
+        recommendedAction: `Avoid Terminal ${displayFlightInfo.terminal}. Follow security personnel instructions.`,
+        safeArea: `Terminal ${
+          displayFlightInfo.terminal === "2" ? "1 or 3" : "2"
+        } is the safe area.`,
+      },
+      {
+        title: "Severe Weather Warning",
+        message: "Tornado warning issued for airport area. Seek shelter immediately.",
+        severity: "high",
+        recommendedAction:
+          "Move to basement level or interior hallways. Stay away from windows.",
+        safeArea: "Basement level, interior hallways, or storm shelters in Terminal 1",
+      },
+      {
+        title: "Flight Delay Alert",
+        message: `Your flight ${displayFlightInfo.flight} is delayed due to severe weather conditions.`,
+        severity: "medium",
+        recommendedAction: `Stay near your gate at Terminal ${displayFlightInfo.terminal} and monitor for updates.`,
+        safeArea: `Remain in Terminal ${displayFlightInfo.terminal} near Gate ${displayFlightInfo.gate}`,
+      },
+    ];
+
+    const timers = [
+      setTimeout(() => {
+        setCurrentAlert(emergencyAlerts[0]);
+        setShowAlert(true);
+      }, 5000),
+      setTimeout(() => {
+        setCurrentAlert(emergencyAlerts[1]);
+        setShowAlert(true);
+      }, 15000),
+      setTimeout(() => {
+        setCurrentAlert(emergencyAlerts[2]);
+        setShowAlert(true);
+      }, 25000),
+    ];
+
+    return () => timers.forEach((timer) => clearTimeout(timer));
+  }, [
+    displayFlightInfo.flight,
+    displayFlightInfo.terminal,
+    displayFlightInfo.gate,
+  ]);
 
   const saveFavoriteLocation = (airportCode) => {
     if (!favoriteLocations.includes(airportCode)) {
@@ -425,10 +560,6 @@ function App() {
   const openAirportMap = (airport) => {
     setSelectedAirportMap(airport);
     setShowMap(true);
-  };
-
-  const openBoardingPass = (passId) => {
-    setSelectedBoardingPassId(passId);
   };
 
   const handleSendBoardingNotification = (notification, flight) => {
@@ -454,67 +585,6 @@ function App() {
     );
   };
 
-  useEffect(() => {
-    const emergencyAlerts = [
-      {
-        title: "SECURITY ALERT",
-        message: `Security incident reported at Terminal ${displayFlightInfo.terminal}. Authorities are responding.`,
-        severity: "high",
-        recommendedAction: `Avoid Terminal ${displayFlightInfo.terminal}. Follow security personnel instructions.`,
-        safeArea: `Terminal ${
-          displayFlightInfo.terminal === "2" ? "1 or 3" : "2"
-        } is the safe area.`,
-      },
-      {
-        title: "SEVERE WEATHER WARNING",
-        message: "Tornado warning issued for airport area. Seek shelter immediately.",
-        severity: "high",
-        recommendedAction:
-          "Move to basement level or interior hallways. Stay away from windows.",
-        safeArea: "Basement level, interior hallways, or storm shelters in Terminal 1",
-      },
-      {
-        title: "FLIGHT DELAY ALERT",
-        message: `Your flight ${displayFlightInfo.flight} is delayed due to severe weather conditions.`,
-        severity: "medium",
-        recommendedAction: `Stay near your gate at Terminal ${displayFlightInfo.terminal} and monitor for updates.`,
-        safeArea: `Remain in Terminal ${displayFlightInfo.terminal} near Gate ${displayFlightInfo.gate}`,
-      },
-      {
-        title: "EVACUATION ORDER",
-        message: `Immediate evacuation required for Terminal ${displayFlightInfo.terminal} due to fire alarm.`,
-        severity: "high",
-        recommendedAction: "Evacuate immediately using stairs. Do not use elevators.",
-        safeArea: "Proceed to Parking Garage Level 2 for assembly point",
-      },
-    ];
-
-    const timers = [
-      setTimeout(() => {
-        setCurrentAlert(emergencyAlerts[0]);
-        setShowAlert(true);
-      }, 5000),
-      setTimeout(() => {
-        setCurrentAlert(emergencyAlerts[1]);
-        setShowAlert(true);
-      }, 15000),
-      setTimeout(() => {
-        setCurrentAlert(emergencyAlerts[2]);
-        setShowAlert(true);
-      }, 25000),
-      setTimeout(() => {
-        setCurrentAlert(emergencyAlerts[3]);
-        setShowAlert(true);
-      }, 40000),
-    ];
-
-    return () => timers.forEach((timer) => clearTimeout(timer));
-  }, [
-    displayFlightInfo.flight,
-    displayFlightInfo.terminal,
-    displayFlightInfo.gate,
-  ]);
-
   const closeAlert = () => {
     setShowAlert(false);
     setCurrentAlert(null);
@@ -534,20 +604,16 @@ function App() {
           >
             <div style={alertBodyStyle}>
               <h2 style={alertTitleStyle}>{currentAlert.title}</h2>
-
               <p style={alertMessageStyle}>{currentAlert.message}</p>
-
               <div style={alertActionBoxStyle}>
                 <strong>Recommended Action:</strong>
                 <p style={alertBoxTextStyle}>{currentAlert.recommendedAction}</p>
               </div>
-
               <div style={alertSafeBoxStyle}>
                 <strong>Safe Area:</strong>
                 <p style={alertBoxTextStyle}>{currentAlert.safeArea}</p>
               </div>
             </div>
-
             <div style={alertFooterStyle}>
               <button
                 onClick={closeAlert}
@@ -564,31 +630,12 @@ function App() {
         </div>
       )}
 
-return (
-  <div style={pageStyle}>
-
-    {broadcastMessage && (
-      <div
-        style={{
-          backgroundColor: "#fef3c7",
-          border: "2px solid #f59e0b",
-          padding: "18px",
-          borderRadius: "12px",
-          marginBottom: "20px",
-          textAlign: "center",
-          fontWeight: "bold",
-          color: "#92400e",
-        }}
-      >
-        📢 AIRPORT ANNOUNCEMENT
-
-        <div style={{ marginTop: "10px", fontWeight: "normal" }}>
-          {broadcastMessage}
+      {broadcastMessage && (
+        <div style={broadcastBannerStyle}>
+          <strong>Airport Announcement</strong>
+          <div style={broadcastMessageStyle}>{broadcastMessage}</div>
         </div>
-      </div>
-    )}
-
-    <header style={headerStyle}></header>
+      )}
 
       <header style={headerStyle}>
         <h1 style={titleStyle}>Air Travel Assist</h1>
@@ -604,7 +651,7 @@ return (
           <label style={labelStyle}>Select Airline</label>
           <select
             value={selectedAirline}
-            onChange={(e) => setSelectedAirline(e.target.value)}
+            onChange={(event) => setSelectedAirline(event.target.value)}
             style={inputStyle}
           >
             <option value="American">American Airlines</option>
@@ -639,44 +686,29 @@ return (
             <input
               type="checkbox"
               checked={autoRefresh}
-              onChange={(e) => setAutoRefresh(e.target.checked)}
+              onChange={(event) => setAutoRefresh(event.target.checked)}
             />
             Auto-refresh every 60 seconds
           </label>
 
           <div style={infoGridStyle}>
-            <div style={infoBoxStyle}>
-              <span style={smallLabelStyle}>Status</span>
-              <strong>{displayFlightInfo.status}</strong>
-            </div>
-            <div style={infoBoxStyle}>
-              <span style={smallLabelStyle}>Gate</span>
-              <strong>{displayFlightInfo.gate}</strong>
-            </div>
-            <div style={infoBoxStyle}>
-              <span style={smallLabelStyle}>Terminal</span>
-              <strong>{displayFlightInfo.terminal}</strong>
-            </div>
-            <div style={infoBoxStyle}>
-              <span style={smallLabelStyle}>Boarding</span>
-              <strong>{displayFlightInfo.boarding}</strong>
-            </div>
-            <div style={infoBoxStyle}>
-              <span style={smallLabelStyle}>Delay</span>
-              <strong>{displayFlightInfo.delay}</strong>
-            </div>
-            <div style={infoBoxStyle}>
-              <span style={smallLabelStyle}>Last Updated</span>
-              <strong>
-                {lastUpdated
+            <InfoBox label="Status" value={displayFlightInfo.status} />
+            <InfoBox label="Gate" value={displayFlightInfo.gate} />
+            <InfoBox label="Terminal" value={displayFlightInfo.terminal} />
+            <InfoBox label="Boarding" value={displayFlightInfo.boarding} />
+            <InfoBox label="Delay" value={displayFlightInfo.delay} />
+            <InfoBox
+              label="Last Updated"
+              value={
+                lastUpdated
                   ? lastUpdated.toLocaleTimeString([], {
                       hour: "numeric",
                       minute: "2-digit",
                       second: "2-digit",
                     })
-                  : "Not updated yet"}
-              </strong>
-            </div>
+                  : "Not updated yet"
+              }
+            />
           </div>
 
           <div style={routeBoxStyle}>
@@ -691,18 +723,12 @@ return (
           <div style={priceSectionStyle}>
             <h3 style={smallHeadingStyle}>Price Options</h3>
             <div style={priceGridStyle}>
-              <div style={priceCardStyle}>
-                <strong>Budget</strong>
-                <span>{flightInfo.prices.Budget}</span>
-              </div>
-              <div style={priceCardStyle}>
-                <strong>Standard</strong>
-                <span>{flightInfo.prices.Standard}</span>
-              </div>
-              <div style={priceCardStyle}>
-                <strong>Premium</strong>
-                <span>{flightInfo.prices.Premium}</span>
-              </div>
+              {Object.entries(flightInfo.prices).map(([name, price]) => (
+                <div key={name} style={priceCardStyle}>
+                  <strong>{name}</strong>
+                  <span>{price}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -715,14 +741,12 @@ return (
             >
               Traveler Tools
             </button>
-
             <button
               onClick={() => setActiveSection("support")}
               style={activeSection === "support" ? activeTabStyle : tabStyle}
             >
               Customer Support
             </button>
-
             <button
               onClick={() => setActiveSection("staff")}
               style={
@@ -736,447 +760,499 @@ return (
           </div>
 
           {activeSection === "traveler" && (
-            <div>
-              <h2 style={sectionTitleStyle}>Traveler Tools</h2>
-
-              <button
-                onClick={() => setShowPolicy(!showPolicy)}
-                style={primaryButtonStyle}
-              >
-                {showPolicy ? "Hide Airline Policy" : "View Airline Policy"}
-              </button>
-
-              {showPolicy && (
-                <div style={detailBoxStyle}>
-                  <h3 style={smallHeadingStyle}>
-                    Airline Policy - {selectedAirline}
-                  </h3>
-                  <ul>
-                    {flightInfo.policy.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <button
-                onClick={() => setShowBaggage(!showBaggage)}
-                style={secondaryButtonStyle}
-              >
-                {showBaggage
-                  ? "Hide Baggage Claim Information"
-                  : "Check Baggage Claim Information"}
-              </button>
-
-              {showBaggage && (
-                <div style={detailBoxStyle}>
-                  <h3 style={smallHeadingStyle}>Baggage Claim Information</h3>
-                  <p>
-                    <strong>Flight:</strong> {displayFlightInfo.flight}
-                  </p>
-                  <p>
-                    <strong>Terminal:</strong> {displayFlightInfo.terminal}
-                  </p>
-                  <p>
-                    <strong>Baggage Claim:</strong>{" "}
-                    {displayFlightInfo.baggageClaim}
-                  </p>
-                </div>
-              )}
-
-              <button
-                onClick={() => setShowTransport(!showTransport)}
-                style={thirdButtonStyle}
-              >
-                {showTransport
-                  ? "Hide Transportation Options"
-                  : "View Transportation Options"}
-              </button>
-
-              {showTransport && (
-                <div style={detailBoxStyle}>
-                  <h3 style={smallHeadingStyle}>Transportation Options</h3>
-                  <ul>
-                    <li>Taxi</li>
-                    <li>Uber / Lyft</li>
-                    <li>Airport Shuttle</li>
-                    <li>Train / Metro</li>
-                    <li>Rental Car Pickup</li>
-                  </ul>
-                </div>
-              )}
-
-              <div style={weatherSectionStyle}>
-                <div style={weatherHeaderStyle}>
-                  <div>
-                    <h3 style={smallHeadingStyle}>Airport Weather</h3>
-                    <p style={weatherIntroStyle}>
-                      Current conditions and alerts for selected airports.
-                    </p>
-                  </div>
-                  <span style={weatherUpdatedStyle}>{selectedWeather.updated}</span>
-                </div>
-
-                <label style={labelStyle}>Select Airport</label>
-                <select
-                  value={selectedWeatherAirport}
-                  onChange={(e) => setSelectedWeatherAirport(e.target.value)}
-                  style={inputStyle}
-                >
-                  {airports.map((airport) => (
-                    <option key={airport.code} value={airport.code}>
-                      {airport.code} - {airport.name}
-                    </option>
-                  ))}
-                </select>
-
-                <div style={weatherSummaryStyle}>
-                  <div>
-                    <span style={smallLabelStyle}>Airport</span>
-                    <strong>{selectedWeatherAirportInfo.name}</strong>
-                  </div>
-                  <div style={temperatureStyle}>{selectedWeather.temperature}</div>
-                </div>
-
-                <div style={weatherGridStyle}>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Condition</span>
-                    <strong>{selectedWeather.condition}</strong>
-                  </div>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Wind</span>
-                    <strong>{selectedWeather.wind}</strong>
-                  </div>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Visibility</span>
-                    <strong>{selectedWeather.visibility}</strong>
-                  </div>
-                  <div style={weatherInfoBoxStyle}>
-                    <span style={smallLabelStyle}>Delay Risk</span>
-                    <strong>{selectedWeather.delayRisk}</strong>
-                  </div>
-                </div>
-
-                <div style={weatherAlertStyle}>
-                  <span style={smallLabelStyle}>Weather Alert</span>
-                  <strong>{selectedWeather.alert}</strong>
-                </div>
-              </div>
-
-              <div style={boardingPassSectionStyle}>
-                <div style={boardingPassHeaderStyle}>
-                  <div>
-                    <h3 style={smallHeadingStyle}>Digital Boarding Passes</h3>
-                    <p style={boardingPassIntroStyle}>
-                      Stored passes for active and upcoming trips.
-                    </p>
-                  </div>
-                  <span style={boardingPassCountStyle}>
-                    {boardingPasses.length} stored
-                  </span>
-                </div>
-
-                <div style={boardingPassListStyle}>
-                  {boardingPasses.map((pass) => (
-                    <button
-                      key={pass.id}
-                      onClick={() => openBoardingPass(pass.id)}
-                      style={
-                        selectedBoardingPass.id === pass.id
-                          ? activeBoardingPassButtonStyle
-                          : boardingPassButtonStyle
-                      }
-                    >
-                      <strong>{pass.flight}</strong>
-                      <span>{pass.route}</span>
-                      <small>{pass.tripStatus}</small>
-                    </button>
-                  ))}
-                </div>
-
-                <div style={boardingPassCardStyle}>
-                  <div style={boardingPassTopRowStyle}>
-                    <div>
-                      <span style={smallLabelStyle}>Passenger</span>
-                      <strong>{selectedBoardingPass.passenger}</strong>
-                    </div>
-                    <span style={tripStatusBadgeStyle}>
-                      {selectedBoardingPass.tripStatus}
-                    </span>
-                  </div>
-
-                  <div style={boardingRouteStyle}>
-                    <strong>{selectedBoardingPass.route}</strong>
-                    <span>{selectedBoardingPass.airline}</span>
-                  </div>
-
-                  <div style={boardingInfoGridStyle}>
-                    <div>
-                      <span style={smallLabelStyle}>Flight</span>
-                      <strong>{selectedBoardingPass.flight}</strong>
-                    </div>
-                    <div>
-                      <span style={smallLabelStyle}>Seat</span>
-                      <strong>{selectedBoardingPass.seat}</strong>
-                    </div>
-                    <div>
-                      <span style={smallLabelStyle}>Group</span>
-                      <strong>{selectedBoardingPass.group}</strong>
-                    </div>
-                    <div>
-                      <span style={smallLabelStyle}>Gate</span>
-                      <strong>{selectedBoardingPass.gate}</strong>
-                    </div>
-                    <div>
-                      <span style={smallLabelStyle}>Terminal</span>
-                      <strong>{selectedBoardingPass.terminal}</strong>
-                    </div>
-                    <div>
-                      <span style={smallLabelStyle}>Boarding</span>
-                      <strong>{selectedBoardingPass.boardingTime}</strong>
-                    </div>
-                  </div>
-
-                  <div style={boardingBarcodeStyle}>
-                    <span style={barcodeLineStyle}></span>
-                    <span style={barcodeLineStyle}></span>
-                    <span style={wideBarcodeLineStyle}></span>
-                    <span style={barcodeLineStyle}></span>
-                    <span style={wideBarcodeLineStyle}></span>
-                    <span style={barcodeLineStyle}></span>
-                    <span style={barcodeLineStyle}></span>
-                    <span style={wideBarcodeLineStyle}></span>
-                    <span style={barcodeLineStyle}></span>
-                    <span style={barcodeLineStyle}></span>
-                  </div>
-
-                  <div style={boardingConfirmationStyle}>
-                    <span>{selectedBoardingPass.barcode}</span>
-                    <strong>Confirmation: {selectedBoardingPass.confirmation}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div style={detailBoxStyle}>
-                <h3 style={smallHeadingStyle}>Passenger Notifications</h3>
-                <PassengerNotifications
-                  notifications={boardingNotifications}
-                  onMarkRead={handleMarkNotificationRead}
-                />
-              </div>
-
-              <div style={detailBoxStyle}>
-                <h3 style={smallHeadingStyle}>Favorite Airports</h3>
-                <div style={buttonWrapStyle}>
-                  {airports.map((airport) => (
-                    <div key={airport.code} style={airportActionStyle}>
-                      <button
-                        onClick={() => saveFavoriteLocation(airport.code)}
-                        style={smallButtonStyle}
-                      >
-                        Save {airport.code}
-                      </button>
-                      <button
-                        onClick={() => openAirportMap(airport)}
-                        style={mapButtonStyle}
-                      >
-                        View Map
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                <h4>Saved Locations</h4>
-
-                {favoriteLocations.length === 0 ? (
-                  <p>No favorite airports saved yet.</p>
-                ) : (
-                  <ul>
-                    {favoriteLocations.map((airportCode) => {
-                      const airport = airports.find(
-                        (item) => item.code === airportCode
-                      );
-
-                      return (
-                      <li key={airportCode} style={favoriteItemStyle}>
-                        {airportCode}
-                        {airport && (
-                          <button
-                            onClick={() => openAirportMap(airport)}
-                            style={savedMapButtonStyle}
-                          >
-                            View Map
-                          </button>
-                        )}
-                        <button
-                          onClick={() => removeFavoriteLocation(airportCode)}
-                          style={removeButtonStyle}
-                        >
-                          Remove
-                        </button>
-                      </li>
-                      );
-                    })}
-                  </ul>
-                )}
-
-                {showMap && selectedAirportMap && (
-                  <div style={mapBoxStyle}>
-                    <div style={mapHeaderStyle}>
-                      <h4 style={mapTitleStyle}>{selectedAirportMap.name}</h4>
-                      <button
-                        onClick={() => setShowMap(false)}
-                        style={closeMapButtonStyle}
-                      >
-                        Close Map
-                      </button>
-                    </div>
-                    <iframe
-                      title={`${selectedAirportMap.code} airport map`}
-                      src={selectedAirportMap.map}
-                      width="100%"
-                      height="320"
-                      style={mapFrameStyle}
-                      allowFullScreen
-                      loading="lazy"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+            <TravelerTools
+              airports={airports}
+              selectedAirline={selectedAirline}
+              flightInfo={flightInfo}
+              displayFlightInfo={displayFlightInfo}
+              showPolicy={showPolicy}
+              setShowPolicy={setShowPolicy}
+              showBaggage={showBaggage}
+              setShowBaggage={setShowBaggage}
+              showTransport={showTransport}
+              setShowTransport={setShowTransport}
+              selectedWeatherAirport={selectedWeatherAirport}
+              setSelectedWeatherAirport={setSelectedWeatherAirport}
+              selectedWeatherAirportInfo={selectedWeatherAirportInfo}
+              selectedWeather={selectedWeather}
+              selectedBoardingPass={selectedBoardingPass}
+              setSelectedBoardingPassId={setSelectedBoardingPassId}
+              boardingNotifications={boardingNotifications}
+              handleMarkNotificationRead={handleMarkNotificationRead}
+              favoriteLocations={favoriteLocations}
+              saveFavoriteLocation={saveFavoriteLocation}
+              removeFavoriteLocation={removeFavoriteLocation}
+              selectedAirportMap={selectedAirportMap}
+              showMap={showMap}
+              setShowMap={setShowMap}
+              openAirportMap={openAirportMap}
+            />
           )}
 
-          {activeSection === "support" && (
-            <div>
-              <h2 style={sectionTitleStyle}>Customer Support</h2>
-              <div style={detailBoxStyle}>
-                <p>
-                  <strong>Support Phone:</strong> (800) 555-1234
-                </p>
-                <p>
-                  <strong>Email:</strong> support@airtravelassist.com
-                </p>
-                <p>
-                  <strong>Live Chat:</strong> Available 24/7
-                </p>
-
-                <textarea
-                  placeholder="Describe your travel issue..."
-                  style={textAreaStyle}
-                />
-
-                <button style={successButtonStyle}>Submit Support Request</button>
-              </div>
-            </div>
-          )}
+          {activeSection === "support" && <SupportPanel />}
 
           {activeSection === "staff" && (
-            <div style={staffSectionStyle}>
-              <h2 style={staffTitleStyle}>Staff Inquiry Dashboard</h2>
-              <p style={staffSubtitleStyle}>
-                Internal staff view for reviewing passenger inquiries.
-              </p>
-
-              <div style={staffToolBoxStyle}>
-                <h3 style={smallHeadingStyle}>Boarding Notifications</h3>
-                <p style={staffToolTextStyle}>
-                  Send boarding, delay, gate change, final call, and status
-                  updates to passengers.
-                </p>
-                <BoardingNotificationPanel
-                  onSendNotification={handleSendBoardingNotification}
-                />
-                <div style={notificationTypeListStyle}>
-                  {Object.entries(notificationTypes).map(([key, type]) => (
-                    <span key={key} style={notificationTypeStyle}>
-                      {type.label}
-                    </span>
-                  ))}
-                </div>
-                <p style={staffToolTextStyle}>
-                  Sent notifications: {sentNotifications.length}
-                </p>
-              </div>
-
-              {customerInquiries.map((inquiry) => (
-                <button
-                  key={inquiry.id}
-                  onClick={() => setSelectedInquiry(inquiry)}
-                  style={inquiryButtonStyle}
-                >
-                  <strong>{inquiry.passenger}</strong>
-                  <span>
-                    {inquiry.type} - {inquiry.urgency}
-                  </span>
-                </button>
-              ))}
-
-              {selectedInquiry && (
-                <div style={staffInquiryStyle}>
-                  <h3 style={smallHeadingStyle}>Inquiry Details</h3>
-                  <p>
-                    <strong>Passenger:</strong> {selectedInquiry.passenger}
-                  </p>
-                  <p>
-                    <strong>Type:</strong> {selectedInquiry.type}
-                  </p>
-                  <p>
-                    <strong>Urgency:</strong> {selectedInquiry.urgency}
-                  </p>
-                  <p>
-                    <strong>Message:</strong> {selectedInquiry.message}
-                  </p>
-                </div>
-
-                
-              )}
-
-              <div
-                style={{
-                  backgroundColor: "#fff",
-                  padding: "20px",
-                  borderRadius: "14px",
-                  marginTop: "20px",
-                  border: "1px solid #f9a8d4",
-                }}
-              >
-                <h3 style={{ marginTop: 0 }}>📢 Airport Announcement System</h3>
-
-                <textarea
-                  value={announcement}
-                  onChange={(e) => setAnnouncement(e.target.value)}
-                  placeholder="Enter airport announcement..."
-                  style={{
-                    width: "100%",
-                    minHeight: "100px",
-                    padding: "12px",
-                    borderRadius: "10px",
-                    border: "1px solid #ccc",
-                    marginBottom: "12px",
-                    fontFamily: "Arial, sans-serif",
-                  }}
-                />
-
-                <button
-                  onClick={() => setBroadcastMessage(announcement)}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    borderRadius: "10px",
-                    border: "none",
-                    backgroundColor: "#be185d",
-                    color: "white",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  Broadcast Announcement
-                </button>
-              </div>
-            </div>
+            <StaffDashboard
+              sentNotifications={sentNotifications}
+              selectedFlight={displayFlightInfo.flight}
+              handleSendBoardingNotification={handleSendBoardingNotification}
+              selectedInquiry={selectedInquiry}
+              setSelectedInquiry={setSelectedInquiry}
+              announcement={announcement}
+              setAnnouncement={setAnnouncement}
+              setBroadcastMessage={setBroadcastMessage}
+            />
           )}
         </section>
       </main>
+    </div>
+  );
+}
+
+function InfoBox({ label, value }) {
+  return (
+    <div style={infoBoxStyle}>
+      <span style={smallLabelStyle}>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function TravelerTools({
+  airports,
+  selectedAirline,
+  flightInfo,
+  displayFlightInfo,
+  showPolicy,
+  setShowPolicy,
+  showBaggage,
+  setShowBaggage,
+  showTransport,
+  setShowTransport,
+  selectedWeatherAirport,
+  setSelectedWeatherAirport,
+  selectedWeatherAirportInfo,
+  selectedWeather,
+  selectedBoardingPass,
+  setSelectedBoardingPassId,
+  boardingNotifications,
+  handleMarkNotificationRead,
+  favoriteLocations,
+  saveFavoriteLocation,
+  removeFavoriteLocation,
+  selectedAirportMap,
+  showMap,
+  setShowMap,
+  openAirportMap,
+}) {
+  return (
+    <div>
+      <h2 style={sectionTitleStyle}>Traveler Tools</h2>
+
+      <button
+        onClick={() => setShowPolicy(!showPolicy)}
+        style={primaryButtonStyle}
+      >
+        {showPolicy ? "Hide Airline Policy" : "View Airline Policy"}
+      </button>
+
+      {showPolicy && (
+        <div style={detailBoxStyle}>
+          <h3 style={smallHeadingStyle}>Airline Policy - {selectedAirline}</h3>
+          <ul>
+            {flightInfo.policy.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <button
+        onClick={() => setShowBaggage(!showBaggage)}
+        style={secondaryButtonStyle}
+      >
+        {showBaggage
+          ? "Hide Baggage Claim Information"
+          : "Check Baggage Claim Information"}
+      </button>
+
+      {showBaggage && (
+        <div style={detailBoxStyle}>
+          <h3 style={smallHeadingStyle}>Baggage Claim Information</h3>
+          <p>
+            <strong>Flight:</strong> {displayFlightInfo.flight}
+          </p>
+          <p>
+            <strong>Terminal:</strong> {displayFlightInfo.terminal}
+          </p>
+          <p>
+            <strong>Baggage Claim:</strong> {displayFlightInfo.baggageClaim}
+          </p>
+        </div>
+      )}
+
+      <button
+        onClick={() => setShowTransport(!showTransport)}
+        style={thirdButtonStyle}
+      >
+        {showTransport ? "Hide Transportation Options" : "View Transportation Options"}
+      </button>
+
+      {showTransport && (
+        <div style={detailBoxStyle}>
+          <h3 style={smallHeadingStyle}>Transportation Options</h3>
+          <ul>
+            <li>Taxi</li>
+            <li>Uber / Lyft</li>
+            <li>Airport Shuttle</li>
+            <li>Train / Metro</li>
+            <li>Rental Car Pickup</li>
+          </ul>
+        </div>
+      )}
+
+      <div style={weatherSectionStyle}>
+        <div style={weatherHeaderStyle}>
+          <div>
+            <h3 style={smallHeadingStyle}>Airport Weather</h3>
+            <p style={weatherIntroStyle}>
+              Current conditions and alerts for selected airports.
+            </p>
+          </div>
+          <span style={weatherUpdatedStyle}>{selectedWeather.updated}</span>
+        </div>
+
+        <label style={labelStyle}>Select Airport</label>
+        <select
+          value={selectedWeatherAirport}
+          onChange={(event) => setSelectedWeatherAirport(event.target.value)}
+          style={inputStyle}
+        >
+          {airports.map((airport) => (
+            <option key={airport.code} value={airport.code}>
+              {airport.code} - {airport.name}
+            </option>
+          ))}
+        </select>
+
+        <div style={weatherSummaryStyle}>
+          <div>
+            <span style={smallLabelStyle}>Airport</span>
+            <strong>{selectedWeatherAirportInfo.name}</strong>
+          </div>
+          <div style={temperatureStyle}>{selectedWeather.temperature}</div>
+        </div>
+
+        <div style={weatherGridStyle}>
+          <InfoPlain label="Condition" value={selectedWeather.condition} />
+          <InfoPlain label="Wind" value={selectedWeather.wind} />
+          <InfoPlain label="Visibility" value={selectedWeather.visibility} />
+          <InfoPlain label="Delay Risk" value={selectedWeather.delayRisk} />
+        </div>
+
+        <div style={weatherAlertStyle}>
+          <span style={smallLabelStyle}>Weather Alert</span>
+          <strong>{selectedWeather.alert}</strong>
+        </div>
+      </div>
+
+      <BoardingPassPanel
+        selectedBoardingPass={selectedBoardingPass}
+        setSelectedBoardingPassId={setSelectedBoardingPassId}
+      />
+
+      <div style={detailBoxStyle}>
+        <h3 style={smallHeadingStyle}>Passenger Notifications</h3>
+        <PassengerNotifications
+          notifications={boardingNotifications}
+          onMarkRead={handleMarkNotificationRead}
+        />
+      </div>
+
+      <FavoriteAirports
+        airports={airports}
+        favoriteLocations={favoriteLocations}
+        saveFavoriteLocation={saveFavoriteLocation}
+        removeFavoriteLocation={removeFavoriteLocation}
+        selectedAirportMap={selectedAirportMap}
+        showMap={showMap}
+        setShowMap={setShowMap}
+        openAirportMap={openAirportMap}
+      />
+    </div>
+  );
+}
+
+function InfoPlain({ label, value }) {
+  return (
+    <div style={weatherInfoBoxStyle}>
+      <span style={smallLabelStyle}>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function BoardingPassPanel({ selectedBoardingPass, setSelectedBoardingPassId }) {
+  return (
+    <div style={boardingPassSectionStyle}>
+      <div style={boardingPassHeaderStyle}>
+        <div>
+          <h3 style={smallHeadingStyle}>Digital Boarding Passes</h3>
+          <p style={boardingPassIntroStyle}>
+            Stored passes for active and upcoming trips.
+          </p>
+        </div>
+        <span style={boardingPassCountStyle}>{boardingPasses.length} stored</span>
+      </div>
+
+      <div style={boardingPassListStyle}>
+        {boardingPasses.map((pass) => (
+          <button
+            key={pass.id}
+            onClick={() => setSelectedBoardingPassId(pass.id)}
+            style={
+              selectedBoardingPass.id === pass.id
+                ? activeBoardingPassButtonStyle
+                : boardingPassButtonStyle
+            }
+          >
+            <strong>{pass.flight}</strong>
+            <span>{pass.route}</span>
+            <small>{pass.tripStatus}</small>
+          </button>
+        ))}
+      </div>
+
+      <div style={boardingPassCardStyle}>
+        <div style={boardingPassTopRowStyle}>
+          <div>
+            <span style={smallLabelStyle}>Passenger</span>
+            <strong>{selectedBoardingPass.passenger}</strong>
+          </div>
+          <span style={tripStatusBadgeStyle}>{selectedBoardingPass.tripStatus}</span>
+        </div>
+
+        <div style={boardingRouteStyle}>
+          <strong>{selectedBoardingPass.route}</strong>
+          <span>{selectedBoardingPass.airline}</span>
+        </div>
+
+        <div style={boardingInfoGridStyle}>
+          <InfoPlain label="Flight" value={selectedBoardingPass.flight} />
+          <InfoPlain label="Seat" value={selectedBoardingPass.seat} />
+          <InfoPlain label="Group" value={selectedBoardingPass.group} />
+          <InfoPlain label="Gate" value={selectedBoardingPass.gate} />
+          <InfoPlain label="Terminal" value={selectedBoardingPass.terminal} />
+          <InfoPlain label="Boarding" value={selectedBoardingPass.boardingTime} />
+        </div>
+
+        <div style={boardingBarcodeStyle}>
+          {[4, 4, 9, 4, 9, 4, 4, 9, 4, 4, 9, 4].map((width, index) => (
+            <span
+              key={`${width}-${index}`}
+              style={{ ...barcodeLineStyle, width: `${width}px` }}
+            />
+          ))}
+        </div>
+
+        <div style={boardingConfirmationStyle}>
+          <span>{selectedBoardingPass.barcode}</span>
+          <strong>Confirmation: {selectedBoardingPass.confirmation}</strong>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FavoriteAirports({
+  airports,
+  favoriteLocations,
+  saveFavoriteLocation,
+  removeFavoriteLocation,
+  selectedAirportMap,
+  showMap,
+  setShowMap,
+  openAirportMap,
+}) {
+  return (
+    <div style={detailBoxStyle}>
+      <h3 style={smallHeadingStyle}>Favorite Airports</h3>
+      <div style={buttonWrapStyle}>
+        {airports.map((airport) => (
+          <div key={airport.code} style={airportActionStyle}>
+            <button
+              onClick={() => saveFavoriteLocation(airport.code)}
+              style={smallButtonStyle}
+            >
+              Save {airport.code}
+            </button>
+            <button onClick={() => openAirportMap(airport)} style={mapButtonStyle}>
+              View Map
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <h4>Saved Locations</h4>
+      {favoriteLocations.length === 0 ? (
+        <p>No favorite airports saved yet.</p>
+      ) : (
+        <ul>
+          {favoriteLocations.map((airportCode) => {
+            const airport = airports.find((item) => item.code === airportCode);
+
+            return (
+              <li key={airportCode} style={favoriteItemStyle}>
+                {airportCode}
+                {airport && (
+                  <button
+                    onClick={() => openAirportMap(airport)}
+                    style={savedMapButtonStyle}
+                  >
+                    View Map
+                  </button>
+                )}
+                <button
+                  onClick={() => removeFavoriteLocation(airportCode)}
+                  style={removeButtonStyle}
+                >
+                  Remove
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {showMap && selectedAirportMap && (
+        <div style={mapBoxStyle}>
+          <div style={mapHeaderStyle}>
+            <h4 style={mapTitleStyle}>{selectedAirportMap.name}</h4>
+            <button onClick={() => setShowMap(false)} style={closeMapButtonStyle}>
+              Close Map
+            </button>
+          </div>
+          <iframe
+            title={`${selectedAirportMap.code} airport map`}
+            src={selectedAirportMap.map}
+            width="100%"
+            height="320"
+            style={mapFrameStyle}
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SupportPanel() {
+  return (
+    <div>
+      <h2 style={sectionTitleStyle}>Customer Support</h2>
+      <div style={detailBoxStyle}>
+        <p>
+          <strong>Support Phone:</strong> (800) 555-1234
+        </p>
+        <p>
+          <strong>Email:</strong> support@airtravelassist.com
+        </p>
+        <p>
+          <strong>Live Chat:</strong> Available 24/7
+        </p>
+        <textarea placeholder="Describe your travel issue..." style={textAreaStyle} />
+        <button style={successButtonStyle}>Submit Support Request</button>
+      </div>
+    </div>
+  );
+}
+
+function StaffDashboard({
+  sentNotifications,
+  selectedFlight,
+  handleSendBoardingNotification,
+  selectedInquiry,
+  setSelectedInquiry,
+  announcement,
+  setAnnouncement,
+  setBroadcastMessage,
+}) {
+  return (
+    <div style={staffSectionStyle}>
+      <h2 style={staffTitleStyle}>Staff Inquiry Dashboard</h2>
+      <p style={staffSubtitleStyle}>
+        Internal staff view for reviewing passenger inquiries.
+      </p>
+
+      <div style={staffToolBoxStyle}>
+        <h3 style={smallHeadingStyle}>Boarding Notifications</h3>
+        <p style={staffToolTextStyle}>
+          Send boarding, delay, gate change, final call, and status updates to
+          passengers.
+        </p>
+        <BoardingNotificationPanel
+          onSendNotification={handleSendBoardingNotification}
+          selectedFlight={selectedFlight}
+        />
+        <div style={notificationTypeListStyle}>
+          {Object.entries(notificationTypes).map(([key, type]) => (
+            <span key={key} style={notificationTypeStyle}>
+              {type.label}
+            </span>
+          ))}
+        </div>
+        <p style={staffToolTextStyle}>
+          Sent notifications: {sentNotifications.length}
+        </p>
+      </div>
+
+      {customerInquiries.map((inquiry) => (
+        <button
+          key={inquiry.id}
+          onClick={() => setSelectedInquiry(inquiry)}
+          style={inquiryButtonStyle}
+        >
+          <strong>{inquiry.passenger}</strong>
+          <span>
+            {inquiry.type} - {inquiry.urgency}
+          </span>
+        </button>
+      ))}
+
+      {selectedInquiry && (
+        <div style={staffInquiryStyle}>
+          <h3 style={smallHeadingStyle}>Inquiry Details</h3>
+          <p>
+            <strong>Passenger:</strong> {selectedInquiry.passenger}
+          </p>
+          <p>
+            <strong>Type:</strong> {selectedInquiry.type}
+          </p>
+          <p>
+            <strong>Urgency:</strong> {selectedInquiry.urgency}
+          </p>
+          <p>
+            <strong>Message:</strong> {selectedInquiry.message}
+          </p>
+        </div>
+      )}
+
+      <div style={staffToolBoxStyle}>
+        <h3 style={smallHeadingStyle}>Airport Announcement System</h3>
+        <textarea
+          value={announcement}
+          onChange={(event) => setAnnouncement(event.target.value)}
+          placeholder="Enter airport announcement..."
+          style={textAreaStyle}
+        />
+        <button
+          onClick={() => setBroadcastMessage(announcement)}
+          style={successButtonStyle}
+        >
+          Broadcast Announcement
+        </button>
+      </div>
     </div>
   );
 }
@@ -1240,6 +1316,18 @@ const inputStyle = {
   border: "1px solid #cbd5e1",
   fontSize: "15px",
   boxSizing: "border-box",
+};
+
+const textAreaStyle = {
+  width: "100%",
+  minHeight: "100px",
+  padding: "12px",
+  borderRadius: "10px",
+  border: "1px solid #cbd5e1",
+  boxSizing: "border-box",
+  fontFamily: "Arial, sans-serif",
+  marginTop: "10px",
+  marginBottom: "12px",
 };
 
 const liveStatusPanelStyle = {
@@ -1597,11 +1685,6 @@ const barcodeLineStyle = {
   display: "block",
 };
 
-const wideBarcodeLineStyle = {
-  ...barcodeLineStyle,
-  width: "9px",
-};
-
 const boardingConfirmationStyle = {
   display: "flex",
   justifyContent: "space-between",
@@ -1654,6 +1737,39 @@ const notificationTypeStyle = {
   padding: "6px 10px",
   fontSize: "13px",
   fontWeight: "bold",
+};
+
+const notificationListStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+};
+
+const unreadNotificationStyle = {
+  backgroundColor: "#eff6ff",
+  border: "1px solid #93c5fd",
+  borderRadius: "10px",
+  padding: "12px",
+};
+
+const readNotificationStyle = {
+  ...unreadNotificationStyle,
+  backgroundColor: "#f8fafc",
+  border: "1px solid #e2e8f0",
+};
+
+const notificationMessageStyle = {
+  margin: "8px 0",
+};
+
+const markReadButtonStyle = {
+  marginTop: "8px",
+  padding: "6px 10px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#1e3a5f",
+  color: "white",
+  cursor: "pointer",
 };
 
 const buttonWrapStyle = {
@@ -1742,18 +1858,6 @@ const mapFrameStyle = {
   borderRadius: "10px",
 };
 
-const textAreaStyle = {
-  width: "100%",
-  minHeight: "100px",
-  padding: "12px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5e1",
-  boxSizing: "border-box",
-  fontFamily: "Arial, sans-serif",
-  marginTop: "10px",
-  marginBottom: "12px",
-};
-
 const inquiryButtonStyle = {
   width: "100%",
   padding: "14px",
@@ -1774,6 +1878,23 @@ const staffInquiryStyle = {
   borderRadius: "14px",
   border: "1px solid #f9a8d4",
   marginTop: "16px",
+  marginBottom: "16px",
+};
+
+const broadcastBannerStyle = {
+  maxWidth: "1000px",
+  margin: "0 auto 20px",
+  backgroundColor: "#fef3c7",
+  border: "2px solid #f59e0b",
+  padding: "18px",
+  borderRadius: "12px",
+  textAlign: "center",
+  color: "#92400e",
+};
+
+const broadcastMessageStyle = {
+  marginTop: "10px",
+  fontWeight: "normal",
 };
 
 const alertOverlayStyle = {
