@@ -175,6 +175,266 @@ const airportWeather = {
   },
 };
 
+const airportCrowdLevels = {
+  LAX: {
+    updated: "Updated 5 minutes ago",
+    bestArea: "Terminal 2 south security checkpoint",
+    summary: "Moderate traffic near main security, lighter crowds near Gates B10-B13.",
+    areas: [
+      {
+        name: "Terminal 2 Security",
+        level: "Medium",
+        waitTime: "18 min",
+        recommendation: "Use south checkpoint for shorter lines.",
+      },
+      {
+        name: "Gate B12 Concourse",
+        level: "Low",
+        waitTime: "Open seating",
+        recommendation: "Good area to wait before boarding.",
+      },
+      {
+        name: "Baggage Claim",
+        level: "Medium",
+        waitTime: "12 min",
+        recommendation: "Expect normal arrival traffic.",
+      },
+    ],
+  },
+  SAN: {
+    updated: "Updated 7 minutes ago",
+    bestArea: "Terminal 1 west concourse",
+    summary: "Morning crowding is easing, but coffee and security lines are still moderate.",
+    areas: [
+      {
+        name: "Terminal 1 Security",
+        level: "Medium",
+        waitTime: "16 min",
+        recommendation: "Arrive early if checking bags.",
+      },
+      {
+        name: "Gate C4 Area",
+        level: "Low",
+        waitTime: "Open seating",
+        recommendation: "Best place to wait for updates.",
+      },
+      {
+        name: "Food Court",
+        level: "High",
+        waitTime: "20 min",
+        recommendation: "Choose grab-and-go options nearby.",
+      },
+    ],
+  },
+  JFK: {
+    updated: "Updated 4 minutes ago",
+    bestArea: "Upper concourse seating near B gates",
+    summary: "High congestion at security due to weather delays and connecting traffic.",
+    areas: [
+      {
+        name: "Main Security",
+        level: "High",
+        waitTime: "32 min",
+        recommendation: "Use alternate checkpoint if available.",
+      },
+      {
+        name: "Gate B Concourse",
+        level: "Medium",
+        waitTime: "Limited seating",
+        recommendation: "Move toward upper concourse for more space.",
+      },
+      {
+        name: "Customer Service Desk",
+        level: "High",
+        waitTime: "25 min",
+        recommendation: "Use airline app for simple changes.",
+      },
+    ],
+  },
+  PDX: {
+    updated: "Updated 9 minutes ago",
+    bestArea: "Gate A8 seating zone",
+    summary: "Terminal traffic is light with small delays near rideshare pickup.",
+    areas: [
+      {
+        name: "Terminal 3 Security",
+        level: "Low",
+        waitTime: "8 min",
+        recommendation: "Normal checkpoint flow.",
+      },
+      {
+        name: "Gate A8 Area",
+        level: "Low",
+        waitTime: "Open seating",
+        recommendation: "Best area for a calm wait.",
+      },
+      {
+        name: "Ground Transportation",
+        level: "Medium",
+        waitTime: "15 min",
+        recommendation: "Allow extra time for rideshare pickup.",
+      },
+    ],
+  },
+  SEA: {
+    updated: "Updated 6 minutes ago",
+    bestArea: "North satellite seating",
+    summary: "Moderate crowding around central terminal, lighter traffic near satellite gates.",
+    areas: [
+      {
+        name: "Central Security",
+        level: "Medium",
+        waitTime: "19 min",
+        recommendation: "Check alternate checkpoint before entering line.",
+      },
+      {
+        name: "North Satellite",
+        level: "Low",
+        waitTime: "Open seating",
+        recommendation: "Less crowded waiting area.",
+      },
+      {
+        name: "Dining Hall",
+        level: "Medium",
+        waitTime: "14 min",
+        recommendation: "Order ahead if possible.",
+      },
+    ],
+  },
+};
+
+const gateRestaurantRecommendations = {
+  American: [
+    {
+      name: "Terminal 2 Market Cafe",
+      type: "Coffee and breakfast",
+      location: "Terminal 2, near Gate B10",
+      walkTime: "3 min walk",
+      bestFor: "Quick coffee before boarding",
+      status: "Open",
+    },
+    {
+      name: "Runway Grill",
+      type: "Burgers and sandwiches",
+      location: "Terminal 2, Gate B14 food court",
+      walkTime: "4 min walk",
+      bestFor: "Fast lunch",
+      status: "Open",
+    },
+    {
+      name: "Fresh To Fly",
+      type: "Salads and grab-and-go",
+      location: "Terminal 2, between Gates B11-B13",
+      walkTime: "2 min walk",
+      bestFor: "Healthy snack",
+      status: "Open",
+    },
+  ],
+  Delta: [
+    {
+      name: "Coastal Coffee Bar",
+      type: "Coffee and pastries",
+      location: "Terminal 1, near Gate C3",
+      walkTime: "2 min walk",
+      bestFor: "Short layover",
+      status: "Open",
+    },
+    {
+      name: "Pacific Noodle House",
+      type: "Noodles and rice bowls",
+      location: "Terminal 1, Gate C5 concourse",
+      walkTime: "5 min walk",
+      bestFor: "Warm meal",
+      status: "Busy",
+    },
+    {
+      name: "Skyline Deli",
+      type: "Sandwiches and bottled drinks",
+      location: "Terminal 1, across from Gate C4",
+      walkTime: "1 min walk",
+      bestFor: "Grab-and-go",
+      status: "Open",
+    },
+  ],
+  United: [
+    {
+      name: "Aero Tacos",
+      type: "Tacos and bowls",
+      location: "Terminal 3, near Gate A7",
+      walkTime: "3 min walk",
+      bestFor: "Quick full meal",
+      status: "Open",
+    },
+    {
+      name: "Cloud City Coffee",
+      type: "Coffee and tea",
+      location: "Terminal 3, Gate A9 kiosk",
+      walkTime: "2 min walk",
+      bestFor: "Pre-boarding drink",
+      status: "Open",
+    },
+    {
+      name: "Northwest Fresh",
+      type: "Wraps and fruit cups",
+      location: "Terminal 3, between Gates A8-A10",
+      walkTime: "4 min walk",
+      bestFor: "Light snack",
+      status: "Open",
+    },
+  ],
+};
+
+const airportActivities = [
+  {
+    id: "ACT-COFFEE",
+    name: "Coffee before boarding",
+    category: "Dining",
+    location: "Near departure gates",
+    duration: "15 min",
+    bestTime: "Before boarding",
+  },
+  {
+    id: "ACT-MEAL",
+    name: "Quick meal",
+    category: "Dining",
+    location: "Terminal food court",
+    duration: "30 min",
+    bestTime: "Layover or delay",
+  },
+  {
+    id: "ACT-SHOP",
+    name: "Travel essentials shopping",
+    category: "Shopping",
+    location: "Main terminal shops",
+    duration: "20 min",
+    bestTime: "Before security or near gate",
+  },
+  {
+    id: "ACT-GIFT",
+    name: "Gift and souvenir stop",
+    category: "Shopping",
+    location: "Concourse retail area",
+    duration: "15 min",
+    bestTime: "Short layover",
+  },
+  {
+    id: "ACT-LOUNGE",
+    name: "Quiet lounge break",
+    category: "Entertainment",
+    location: "Terminal seating lounge",
+    duration: "45 min",
+    bestTime: "Long wait",
+  },
+  {
+    id: "ACT-WALK",
+    name: "Terminal walk",
+    category: "Entertainment",
+    location: "Connected concourses",
+    duration: "20 min",
+    bestTime: "Before sitting at gate",
+  },
+];
+
 const customerInquiries = [
   {
     id: 1,
@@ -374,6 +634,7 @@ function App() {
   const [sentNotifications, setSentNotifications] = useState([]);
   const [announcement, setAnnouncement] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [plannedActivities, setPlannedActivities] = useState([]);
 
   const flightInfo = airlineFlights[selectedAirline];
   const displayFlightInfo = useMemo(
@@ -391,6 +652,10 @@ function App() {
     airports.find((airport) => airport.code === selectedWeatherAirport) ||
     airports[0];
   const selectedWeather = airportWeather[selectedWeatherAirport];
+  const selectedCrowdData = airportCrowdLevels[selectedWeatherAirport];
+  const selectedRestaurants =
+    gateRestaurantRecommendations[selectedAirline] ||
+    gateRestaurantRecommendations.American;
 
   const formatTime = (timeValue) => {
     if (!timeValue) {
@@ -560,6 +825,18 @@ function App() {
   const openAirportMap = (airport) => {
     setSelectedAirportMap(airport);
     setShowMap(true);
+  };
+
+  const addPlannedActivity = (activity) => {
+    if (!plannedActivities.some((item) => item.id === activity.id)) {
+      setPlannedActivities([...plannedActivities, activity]);
+    }
+  };
+
+  const removePlannedActivity = (activityId) => {
+    setPlannedActivities(
+      plannedActivities.filter((activity) => activity.id !== activityId)
+    );
   };
 
   const handleSendBoardingNotification = (notification, flight) => {
@@ -775,6 +1052,11 @@ function App() {
               setSelectedWeatherAirport={setSelectedWeatherAirport}
               selectedWeatherAirportInfo={selectedWeatherAirportInfo}
               selectedWeather={selectedWeather}
+              selectedCrowdData={selectedCrowdData}
+              selectedRestaurants={selectedRestaurants}
+              plannedActivities={plannedActivities}
+              addPlannedActivity={addPlannedActivity}
+              removePlannedActivity={removePlannedActivity}
               selectedBoardingPass={selectedBoardingPass}
               setSelectedBoardingPassId={setSelectedBoardingPassId}
               boardingNotifications={boardingNotifications}
@@ -833,6 +1115,11 @@ function TravelerTools({
   setSelectedWeatherAirport,
   selectedWeatherAirportInfo,
   selectedWeather,
+  selectedCrowdData,
+  selectedRestaurants,
+  plannedActivities,
+  addPlannedActivity,
+  removePlannedActivity,
   selectedBoardingPass,
   setSelectedBoardingPassId,
   boardingNotifications,
@@ -845,140 +1132,417 @@ function TravelerTools({
   setShowMap,
   openAirportMap,
 }) {
+  const [activeTravelerTool, setActiveTravelerTool] = useState("conditions");
+
   return (
     <div>
       <h2 style={sectionTitleStyle}>Traveler Tools</h2>
 
-      <button
-        onClick={() => setShowPolicy(!showPolicy)}
-        style={primaryButtonStyle}
-      >
-        {showPolicy ? "Hide Airline Policy" : "View Airline Policy"}
-      </button>
-
-      {showPolicy && (
-        <div style={detailBoxStyle}>
-          <h3 style={smallHeadingStyle}>Airline Policy - {selectedAirline}</h3>
-          <ul>
-            {flightInfo.policy.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <button
-        onClick={() => setShowBaggage(!showBaggage)}
-        style={secondaryButtonStyle}
-      >
-        {showBaggage
-          ? "Hide Baggage Claim Information"
-          : "Check Baggage Claim Information"}
-      </button>
-
-      {showBaggage && (
-        <div style={detailBoxStyle}>
-          <h3 style={smallHeadingStyle}>Baggage Claim Information</h3>
-          <p>
-            <strong>Flight:</strong> {displayFlightInfo.flight}
-          </p>
-          <p>
-            <strong>Terminal:</strong> {displayFlightInfo.terminal}
-          </p>
-          <p>
-            <strong>Baggage Claim:</strong> {displayFlightInfo.baggageClaim}
-          </p>
-        </div>
-      )}
-
-      <button
-        onClick={() => setShowTransport(!showTransport)}
-        style={thirdButtonStyle}
-      >
-        {showTransport ? "Hide Transportation Options" : "View Transportation Options"}
-      </button>
-
-      {showTransport && (
-        <div style={detailBoxStyle}>
-          <h3 style={smallHeadingStyle}>Transportation Options</h3>
-          <ul>
-            <li>Taxi</li>
-            <li>Uber / Lyft</li>
-            <li>Airport Shuttle</li>
-            <li>Train / Metro</li>
-            <li>Rental Car Pickup</li>
-          </ul>
-        </div>
-      )}
-
-      <div style={weatherSectionStyle}>
-        <div style={weatherHeaderStyle}>
-          <div>
-            <h3 style={smallHeadingStyle}>Airport Weather</h3>
-            <p style={weatherIntroStyle}>
-              Current conditions and alerts for selected airports.
-            </p>
-          </div>
-          <span style={weatherUpdatedStyle}>{selectedWeather.updated}</span>
-        </div>
-
-        <label style={labelStyle}>Select Airport</label>
-        <select
-          value={selectedWeatherAirport}
-          onChange={(event) => setSelectedWeatherAirport(event.target.value)}
-          style={inputStyle}
+      <div style={travelerSubTabRowStyle}>
+        <button
+          onClick={() => setActiveTravelerTool("conditions")}
+          style={
+            activeTravelerTool === "conditions"
+              ? activeTravelerSubTabStyle
+              : travelerSubTabStyle
+          }
         >
-          {airports.map((airport) => (
-            <option key={airport.code} value={airport.code}>
-              {airport.code} - {airport.name}
-            </option>
-          ))}
-        </select>
+          Conditions
+        </button>
+        <button
+          onClick={() => setActiveTravelerTool("activities")}
+          style={
+            activeTravelerTool === "activities"
+              ? activeTravelerSubTabStyle
+              : travelerSubTabStyle
+          }
+        >
+          Dining & Activities
+        </button>
+        <button
+          onClick={() => setActiveTravelerTool("trip")}
+          style={
+            activeTravelerTool === "trip"
+              ? activeTravelerSubTabStyle
+              : travelerSubTabStyle
+          }
+        >
+          Trip Tools
+        </button>
+      </div>
 
-        <div style={weatherSummaryStyle}>
-          <div>
-            <span style={smallLabelStyle}>Airport</span>
-            <strong>{selectedWeatherAirportInfo.name}</strong>
+      {activeTravelerTool === "conditions" && (
+        <div style={travelerToolsGridStyle}>
+          <AirportWeatherPanel
+            airports={airports}
+            selectedWeatherAirport={selectedWeatherAirport}
+            setSelectedWeatherAirport={setSelectedWeatherAirport}
+            selectedWeatherAirportInfo={selectedWeatherAirportInfo}
+            selectedWeather={selectedWeather}
+          />
+
+          <AirportCrowdLevels
+            airportInfo={selectedWeatherAirportInfo}
+            crowdData={selectedCrowdData}
+          />
+        </div>
+      )}
+
+      {activeTravelerTool === "activities" && (
+        <div style={travelerToolsGridStyle}>
+          <RestaurantRecommendations
+            flightInfo={displayFlightInfo}
+            restaurants={selectedRestaurants}
+          />
+
+          <AirportActivityPlanner
+            airportInfo={selectedWeatherAirportInfo}
+            plannedActivities={plannedActivities}
+            addPlannedActivity={addPlannedActivity}
+            removePlannedActivity={removePlannedActivity}
+          />
+        </div>
+      )}
+
+      {activeTravelerTool === "trip" && (
+        <div style={travelerToolsGridStyle}>
+          <div style={travelerToolsColumnStyle}>
+            <button
+              onClick={() => setShowPolicy(!showPolicy)}
+              style={primaryButtonStyle}
+            >
+              {showPolicy ? "Hide Airline Policy" : "View Airline Policy"}
+            </button>
+
+            {showPolicy && (
+              <div style={detailBoxStyle}>
+                <h3 style={smallHeadingStyle}>
+                  Airline Policy - {selectedAirline}
+                </h3>
+                <ul>
+                  {flightInfo.policy.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowBaggage(!showBaggage)}
+              style={secondaryButtonStyle}
+            >
+              {showBaggage
+                ? "Hide Baggage Claim Information"
+                : "Check Baggage Claim Information"}
+            </button>
+
+            {showBaggage && (
+              <div style={detailBoxStyle}>
+                <h3 style={smallHeadingStyle}>Baggage Claim Information</h3>
+                <p>
+                  <strong>Flight:</strong> {displayFlightInfo.flight}
+                </p>
+                <p>
+                  <strong>Terminal:</strong> {displayFlightInfo.terminal}
+                </p>
+                <p>
+                  <strong>Baggage Claim:</strong> {displayFlightInfo.baggageClaim}
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowTransport(!showTransport)}
+              style={thirdButtonStyle}
+            >
+              {showTransport
+                ? "Hide Transportation Options"
+                : "View Transportation Options"}
+            </button>
+
+            {showTransport && (
+              <div style={detailBoxStyle}>
+                <h3 style={smallHeadingStyle}>Transportation Options</h3>
+                <ul>
+                  <li>Taxi</li>
+                  <li>Uber / Lyft</li>
+                  <li>Airport Shuttle</li>
+                  <li>Train / Metro</li>
+                  <li>Rental Car Pickup</li>
+                </ul>
+              </div>
+            )}
+
+            <div style={detailBoxStyle}>
+              <h3 style={smallHeadingStyle}>Passenger Notifications</h3>
+              <PassengerNotifications
+                notifications={boardingNotifications}
+                onMarkRead={handleMarkNotificationRead}
+              />
+            </div>
           </div>
-          <div style={temperatureStyle}>{selectedWeather.temperature}</div>
-        </div>
 
-        <div style={weatherGridStyle}>
-          <InfoPlain label="Condition" value={selectedWeather.condition} />
-          <InfoPlain label="Wind" value={selectedWeather.wind} />
-          <InfoPlain label="Visibility" value={selectedWeather.visibility} />
-          <InfoPlain label="Delay Risk" value={selectedWeather.delayRisk} />
-        </div>
+          <div style={travelerToolsColumnStyle}>
+            <BoardingPassPanel
+              selectedBoardingPass={selectedBoardingPass}
+              setSelectedBoardingPassId={setSelectedBoardingPassId}
+            />
 
-        <div style={weatherAlertStyle}>
-          <span style={smallLabelStyle}>Weather Alert</span>
-          <strong>{selectedWeather.alert}</strong>
+            <FavoriteAirports
+              airports={airports}
+              favoriteLocations={favoriteLocations}
+              saveFavoriteLocation={saveFavoriteLocation}
+              removeFavoriteLocation={removeFavoriteLocation}
+              selectedAirportMap={selectedAirportMap}
+              showMap={showMap}
+              setShowMap={setShowMap}
+              openAirportMap={openAirportMap}
+            />
+          </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+function AirportWeatherPanel({
+  airports,
+  selectedWeatherAirport,
+  setSelectedWeatherAirport,
+  selectedWeatherAirportInfo,
+  selectedWeather,
+}) {
+  return (
+    <div style={weatherSectionStyle}>
+      <div style={weatherHeaderStyle}>
+        <div>
+          <h3 style={smallHeadingStyle}>Airport Weather</h3>
+          <p style={weatherIntroStyle}>
+            Current conditions and alerts for selected airports.
+          </p>
+        </div>
+        <span style={weatherUpdatedStyle}>{selectedWeather.updated}</span>
       </div>
 
-      <BoardingPassPanel
-        selectedBoardingPass={selectedBoardingPass}
-        setSelectedBoardingPassId={setSelectedBoardingPassId}
-      />
+      <label style={labelStyle}>Select Airport</label>
+      <select
+        value={selectedWeatherAirport}
+        onChange={(event) => setSelectedWeatherAirport(event.target.value)}
+        style={inputStyle}
+      >
+        {airports.map((airport) => (
+          <option key={airport.code} value={airport.code}>
+            {airport.code} - {airport.name}
+          </option>
+        ))}
+      </select>
 
-      <div style={detailBoxStyle}>
-        <h3 style={smallHeadingStyle}>Passenger Notifications</h3>
-        <PassengerNotifications
-          notifications={boardingNotifications}
-          onMarkRead={handleMarkNotificationRead}
-        />
+      <div style={weatherSummaryStyle}>
+        <div>
+          <span style={smallLabelStyle}>Airport</span>
+          <strong>{selectedWeatherAirportInfo.name}</strong>
+        </div>
+        <div style={temperatureStyle}>{selectedWeather.temperature}</div>
       </div>
 
-      <FavoriteAirports
-        airports={airports}
-        favoriteLocations={favoriteLocations}
-        saveFavoriteLocation={saveFavoriteLocation}
-        removeFavoriteLocation={removeFavoriteLocation}
-        selectedAirportMap={selectedAirportMap}
-        showMap={showMap}
-        setShowMap={setShowMap}
-        openAirportMap={openAirportMap}
-      />
+      <div style={weatherGridStyle}>
+        <InfoPlain label="Condition" value={selectedWeather.condition} />
+        <InfoPlain label="Wind" value={selectedWeather.wind} />
+        <InfoPlain label="Visibility" value={selectedWeather.visibility} />
+        <InfoPlain label="Delay Risk" value={selectedWeather.delayRisk} />
+      </div>
+
+      <div style={weatherAlertStyle}>
+        <span style={smallLabelStyle}>Weather Alert</span>
+        <strong>{selectedWeather.alert}</strong>
+      </div>
+    </div>
+  );
+}
+
+function AirportCrowdLevels({ airportInfo, crowdData }) {
+  return (
+    <div style={crowdSectionStyle}>
+      <div style={crowdHeaderStyle}>
+        <div>
+          <h3 style={smallHeadingStyle}>Airport Crowd Levels</h3>
+          <p style={crowdIntroStyle}>
+            Estimated congestion for {airportInfo.code} terminal areas.
+          </p>
+        </div>
+        <span style={crowdUpdatedStyle}>{crowdData.updated}</span>
+      </div>
+
+      <div style={crowdSummaryStyle}>
+        <span style={smallLabelStyle}>Best Less-Crowded Area</span>
+        <strong>{crowdData.bestArea}</strong>
+        <p style={crowdSummaryTextStyle}>{crowdData.summary}</p>
+      </div>
+
+      <div style={crowdAreaListStyle}>
+        {crowdData.areas.map((area) => (
+          <div key={area.name} style={crowdAreaCardStyle}>
+            <div style={crowdAreaTopRowStyle}>
+              <strong>{area.name}</strong>
+              <span style={getCrowdBadgeStyle(area.level)}>{area.level}</span>
+            </div>
+            <div style={crowdWaitStyle}>
+              <span style={smallLabelStyle}>Wait / Space</span>
+              <strong>{area.waitTime}</strong>
+            </div>
+            <p style={crowdRecommendationStyle}>{area.recommendation}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function getCrowdBadgeStyle(level) {
+  if (level === "High") {
+    return crowdHighBadgeStyle;
+  }
+
+  if (level === "Medium") {
+    return crowdMediumBadgeStyle;
+  }
+
+  return crowdLowBadgeStyle;
+}
+
+function RestaurantRecommendations({ flightInfo, restaurants }) {
+  return (
+    <div style={restaurantSectionStyle}>
+      <div style={restaurantHeaderStyle}>
+        <div>
+          <h3 style={smallHeadingStyle}>Gate Restaurant Recommendations</h3>
+          <p style={restaurantIntroStyle}>
+            Dining options near Terminal {flightInfo.terminal}, Gate {flightInfo.gate}.
+          </p>
+        </div>
+        <span style={restaurantGateBadgeStyle}>Near {flightInfo.gate}</span>
+      </div>
+
+      <div style={restaurantListStyle}>
+        {restaurants.map((restaurant) => (
+          <div key={restaurant.name} style={restaurantCardStyle}>
+            <div style={restaurantTopRowStyle}>
+              <strong>{restaurant.name}</strong>
+              <span
+                style={
+                  restaurant.status === "Busy"
+                    ? restaurantBusyBadgeStyle
+                    : restaurantOpenBadgeStyle
+                }
+              >
+                {restaurant.status}
+              </span>
+            </div>
+            <span style={smallLabelStyle}>{restaurant.type}</span>
+            <p style={restaurantLocationStyle}>{restaurant.location}</p>
+            <div style={restaurantMetaStyle}>
+              <span>{restaurant.walkTime}</span>
+              <span>{restaurant.bestFor}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AirportActivityPlanner({
+  airportInfo,
+  plannedActivities,
+  addPlannedActivity,
+  removePlannedActivity,
+}) {
+  const totalMinutes = plannedActivities.reduce(
+    (total, activity) => total + Number.parseInt(activity.duration, 10),
+    0
+  );
+
+  return (
+    <div style={activitySectionStyle}>
+      <div style={activityHeaderStyle}>
+        <div>
+          <h3 style={smallHeadingStyle}>Airport Activity Planner</h3>
+          <p style={activityIntroStyle}>
+            Schedule shopping, dining, or entertainment during airport wait time.
+          </p>
+        </div>
+        <span style={activityCountStyle}>
+          {plannedActivities.length} planned
+        </span>
+      </div>
+
+      <div style={activityCatalogStyle}>
+        {airportActivities.map((activity) => {
+          const alreadyPlanned = plannedActivities.some(
+            (item) => item.id === activity.id
+          );
+
+          return (
+            <div key={activity.id} style={activityCardStyle}>
+              <div style={activityTopRowStyle}>
+                <strong>{activity.name}</strong>
+                <span style={activityCategoryStyle}>{activity.category}</span>
+              </div>
+              <p style={activityDetailStyle}>
+                {activity.location} at {airportInfo.code}
+              </p>
+              <div style={activityMetaStyle}>
+                <span>{activity.duration}</span>
+                <span>{activity.bestTime}</span>
+              </div>
+              <button
+                onClick={() => addPlannedActivity(activity)}
+                disabled={alreadyPlanned}
+                style={
+                  alreadyPlanned
+                    ? disabledActivityButtonStyle
+                    : addActivityButtonStyle
+                }
+              >
+                {alreadyPlanned ? "Added" : "Add to Schedule"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={activityScheduleStyle}>
+        <div style={activityScheduleHeaderStyle}>
+          <h4 style={activityScheduleTitleStyle}>My Airport Schedule</h4>
+          <span style={activityTotalTimeStyle}>
+            {totalMinutes} min planned
+          </span>
+        </div>
+
+        {plannedActivities.length === 0 ? (
+          <p style={activityEmptyStyle}>No activities added yet.</p>
+        ) : (
+          <div style={activityTimelineStyle}>
+            {plannedActivities.map((activity, index) => (
+              <div key={activity.id} style={activityTimelineItemStyle}>
+                <span style={activityStepStyle}>{index + 1}</span>
+                <div style={activityTimelineTextStyle}>
+                  <strong>{activity.name}</strong>
+                  <span>
+                    {activity.duration} - {activity.location}
+                  </span>
+                </div>
+                <button
+                  onClick={() => removePlannedActivity(activity.id)}
+                  style={removeActivityButtonStyle}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1282,10 +1846,10 @@ const subtitleStyle = {
 };
 
 const appContainerStyle = {
-  maxWidth: "1000px",
+  maxWidth: "1280px",
   margin: "0 auto",
   display: "grid",
-  gridTemplateColumns: "1fr 1.2fr",
+  gridTemplateColumns: "0.8fr 1.6fr",
   gap: "24px",
   alignItems: "start",
 };
@@ -1501,6 +2065,47 @@ const detailBoxStyle = {
   marginBottom: "16px",
 };
 
+const travelerSubTabRowStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 1fr)",
+  gap: "8px",
+  backgroundColor: "#f1f5f9",
+  border: "1px solid #e2e8f0",
+  borderRadius: "12px",
+  padding: "8px",
+  marginBottom: "16px",
+};
+
+const travelerSubTabStyle = {
+  padding: "10px",
+  borderRadius: "9px",
+  border: "1px solid transparent",
+  backgroundColor: "transparent",
+  color: "#334155",
+  cursor: "pointer",
+  fontWeight: "bold",
+  fontSize: "13px",
+};
+
+const activeTravelerSubTabStyle = {
+  ...travelerSubTabStyle,
+  backgroundColor: "white",
+  border: "1px solid #bfdbfe",
+  color: "#1e3a5f",
+  boxShadow: "0 2px 8px rgba(15, 23, 42, 0.08)",
+};
+
+const travelerToolsGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+  gap: "16px",
+  alignItems: "start",
+};
+
+const travelerToolsColumnStyle = {
+  minWidth: 0,
+};
+
 const weatherSectionStyle = {
   ...detailBoxStyle,
   backgroundColor: "#f0fdfa",
@@ -1568,6 +2173,351 @@ const weatherAlertStyle = {
   borderRadius: "10px",
   padding: "12px",
   lineHeight: "1.5",
+};
+
+const crowdSectionStyle = {
+  ...detailBoxStyle,
+  backgroundColor: "#f5f3ff",
+  border: "1px solid #ddd6fe",
+};
+
+const crowdHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "12px",
+};
+
+const crowdIntroStyle = {
+  margin: "4px 0 14px",
+  color: "#5b21b6",
+};
+
+const crowdUpdatedStyle = {
+  backgroundColor: "#ede9fe",
+  color: "#5b21b6",
+  borderRadius: "999px",
+  padding: "6px 10px",
+  fontSize: "13px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+};
+
+const crowdSummaryStyle = {
+  backgroundColor: "white",
+  border: "1px solid #ddd6fe",
+  borderRadius: "12px",
+  padding: "14px",
+  marginBottom: "12px",
+};
+
+const crowdSummaryTextStyle = {
+  margin: "8px 0 0",
+  color: "#334155",
+  lineHeight: "1.5",
+};
+
+const crowdAreaListStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr",
+  gap: "10px",
+};
+
+const crowdAreaCardStyle = {
+  backgroundColor: "white",
+  border: "1px solid #ddd6fe",
+  borderRadius: "12px",
+  padding: "12px",
+};
+
+const crowdAreaTopRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "10px",
+  marginBottom: "10px",
+};
+
+const crowdLowBadgeStyle = {
+  backgroundColor: "#dcfce7",
+  color: "#166534",
+  borderRadius: "999px",
+  padding: "4px 9px",
+  fontSize: "12px",
+  fontWeight: "bold",
+};
+
+const crowdMediumBadgeStyle = {
+  ...crowdLowBadgeStyle,
+  backgroundColor: "#fef3c7",
+  color: "#92400e",
+};
+
+const crowdHighBadgeStyle = {
+  ...crowdLowBadgeStyle,
+  backgroundColor: "#fee2e2",
+  color: "#991b1b",
+};
+
+const crowdWaitStyle = {
+  backgroundColor: "#fafafa",
+  borderRadius: "10px",
+  padding: "10px",
+  marginBottom: "10px",
+};
+
+const crowdRecommendationStyle = {
+  margin: 0,
+  color: "#5b21b6",
+  lineHeight: "1.45",
+  fontWeight: "bold",
+};
+
+const restaurantSectionStyle = {
+  ...detailBoxStyle,
+  backgroundColor: "#fff7ed",
+  border: "1px solid #fed7aa",
+};
+
+const restaurantHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "12px",
+};
+
+const restaurantIntroStyle = {
+  margin: "4px 0 14px",
+  color: "#7c2d12",
+};
+
+const restaurantGateBadgeStyle = {
+  backgroundColor: "#ffedd5",
+  color: "#9a3412",
+  borderRadius: "999px",
+  padding: "6px 10px",
+  fontSize: "13px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+};
+
+const restaurantListStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr",
+  gap: "10px",
+};
+
+const restaurantCardStyle = {
+  backgroundColor: "white",
+  border: "1px solid #fed7aa",
+  borderRadius: "12px",
+  padding: "12px",
+};
+
+const restaurantTopRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "10px",
+  marginBottom: "4px",
+};
+
+const restaurantOpenBadgeStyle = {
+  backgroundColor: "#dcfce7",
+  color: "#166534",
+  borderRadius: "999px",
+  padding: "4px 8px",
+  fontSize: "12px",
+  fontWeight: "bold",
+};
+
+const restaurantBusyBadgeStyle = {
+  ...restaurantOpenBadgeStyle,
+  backgroundColor: "#fef3c7",
+  color: "#92400e",
+};
+
+const restaurantLocationStyle = {
+  margin: "8px 0",
+  color: "#334155",
+};
+
+const restaurantMetaStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "10px",
+  color: "#9a3412",
+  fontSize: "13px",
+  fontWeight: "bold",
+};
+
+const activitySectionStyle = {
+  ...detailBoxStyle,
+  backgroundColor: "#f0f9ff",
+  border: "1px solid #bae6fd",
+};
+
+const activityHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "12px",
+};
+
+const activityIntroStyle = {
+  margin: "4px 0 14px",
+  color: "#075985",
+};
+
+const activityCountStyle = {
+  backgroundColor: "#e0f2fe",
+  color: "#075985",
+  borderRadius: "999px",
+  padding: "6px 10px",
+  fontSize: "13px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+};
+
+const activityCatalogStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "10px",
+  marginBottom: "14px",
+};
+
+const activityCardStyle = {
+  backgroundColor: "white",
+  border: "1px solid #bae6fd",
+  borderRadius: "12px",
+  padding: "12px",
+};
+
+const activityTopRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: "8px",
+  marginBottom: "8px",
+};
+
+const activityCategoryStyle = {
+  backgroundColor: "#e0f2fe",
+  color: "#0369a1",
+  borderRadius: "999px",
+  padding: "4px 8px",
+  fontSize: "12px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+};
+
+const activityDetailStyle = {
+  margin: "0 0 8px",
+  color: "#334155",
+  lineHeight: "1.4",
+};
+
+const activityMetaStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "8px",
+  color: "#075985",
+  fontSize: "13px",
+  fontWeight: "bold",
+  marginBottom: "10px",
+};
+
+const addActivityButtonStyle = {
+  width: "100%",
+  padding: "9px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#0369a1",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
+
+const disabledActivityButtonStyle = {
+  ...addActivityButtonStyle,
+  backgroundColor: "#94a3b8",
+  cursor: "not-allowed",
+};
+
+const activityScheduleStyle = {
+  backgroundColor: "white",
+  border: "1px solid #bae6fd",
+  borderRadius: "12px",
+  padding: "14px",
+};
+
+const activityScheduleHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "10px",
+  marginBottom: "10px",
+};
+
+const activityScheduleTitleStyle = {
+  margin: 0,
+  color: "#0f172a",
+};
+
+const activityTotalTimeStyle = {
+  color: "#075985",
+  fontSize: "13px",
+  fontWeight: "bold",
+};
+
+const activityEmptyStyle = {
+  margin: 0,
+  color: "#64748b",
+};
+
+const activityTimelineStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+};
+
+const activityTimelineItemStyle = {
+  display: "grid",
+  gridTemplateColumns: "28px 1fr auto",
+  gap: "10px",
+  alignItems: "center",
+  backgroundColor: "#f8fafc",
+  borderRadius: "10px",
+  padding: "10px",
+};
+
+const activityStepStyle = {
+  width: "28px",
+  height: "28px",
+  borderRadius: "999px",
+  backgroundColor: "#0369a1",
+  color: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontWeight: "bold",
+  fontSize: "13px",
+};
+
+const activityTimelineTextStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "3px",
+};
+
+const removeActivityButtonStyle = {
+  padding: "7px 9px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#991b1b",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: "bold",
 };
 
 const boardingPassSectionStyle = {
