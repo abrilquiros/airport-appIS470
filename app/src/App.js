@@ -536,6 +536,7 @@ const notificationTypes = {
   },
 };
 
+
 function PassengerNotifications({ notifications, onMarkRead }) {
   if (notifications.length === 0) {
     return <p>No passenger notifications yet.</p>;
@@ -635,6 +636,13 @@ function App() {
   const [announcement, setAnnouncement] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [plannedActivities, setPlannedActivities] = useState([]);
+  const [aiMessages, setAiMessages] = useState([
+    {
+      role: "assistant",
+      content:
+        "Hello! I can help with flight status, gates, boarding, weather, crowd levels, restaurants, baggage claim, and airport services.",
+    },
+  ]);
 
   const flightInfo = airlineFlights[selectedAirline];
   const displayFlightInfo = useMemo(
@@ -1068,6 +1076,8 @@ function App() {
               showMap={showMap}
               setShowMap={setShowMap}
               openAirportMap={openAirportMap}
+              aiMessages={aiMessages}
+              setAiMessages={setAiMessages}
             />
           )}
 
@@ -1131,6 +1141,8 @@ function TravelerTools({
   showMap,
   setShowMap,
   openAirportMap,
+  aiMessages,
+  setAiMessages,
 }) {
   const [activeTravelerTool, setActiveTravelerTool] = useState("conditions");
 
@@ -1169,6 +1181,16 @@ function TravelerTools({
         >
           Trip Tools
         </button>
+        <button
+           onClick={() => setActiveTravelerTool("assistant")}
+           style={
+             activeTravelerTool === "assistant"
+              ? activeTravelerSubTabStyle
+              : travelerSubTabStyle
+           }
+          >
+         AI Assistant
+</button>
       </div>
 
       {activeTravelerTool === "conditions" && (
@@ -1300,6 +1322,18 @@ function TravelerTools({
             />
           </div>
         </div>
+      )}
+
+      {activeTravelerTool === "assistant" && (
+        <AIAssistant
+          messages={aiMessages}
+          setMessages={setAiMessages}
+          flightInfo={displayFlightInfo}
+          weather={selectedWeather}
+          crowdData={selectedCrowdData}
+          restaurants={selectedRestaurants}
+          boardingPass={selectedBoardingPass}
+        />
       )}
     </div>
   );
@@ -1821,6 +1855,140 @@ function StaffDashboard({
   );
 }
 
+function AIAssistant({
+  messages,
+  setMessages,
+  flightInfo,
+  weather,
+  crowdData,
+  restaurants,
+  boardingPass,
+}) {
+  const [question, setQuestion] = useState("");
+
+  const generateResponse = (text) => {
+    const q = text.toLowerCase();
+
+    if (q.includes("gate")) {
+      return `Your flight ${flightInfo.flight} departs from Gate ${flightInfo.gate} in Terminal ${flightInfo.terminal}.`;
+    }
+
+    if (q.includes("weather")) {
+      return `${weather.condition}, ${weather.temperature}. Delay risk is ${weather.delayRisk}.`;
+    }
+
+    if (q.includes("crowd")) {
+      return `Least crowded area: ${crowdData.bestArea}.`;
+    }
+
+    if (q.includes("restaurant") || q.includes("food")) {
+      return `Recommended: ${restaurants[0].name} (${restaurants[0].walkTime}).`;
+    }
+
+    if (q.includes("boarding")) {
+      return `Boarding begins at ${flightInfo.boarding}.`;
+    }
+
+    if (q.includes("seat")) {
+      return `Your seat is ${boardingPass.seat}.`;
+    }
+
+    return "I can help with flights, gates, boarding, weather, restaurants, baggage, and airport information.";
+  };
+
+  const sendMessage = () => {
+    if (!question.trim()) return;
+
+    const userMessage = {
+      role: "user",
+      content: question,
+    };
+
+    const aiMessage = {
+      role: "assistant",
+      content: generateResponse(question),
+    };
+
+    setMessages([...messages, userMessage, aiMessage]);
+    setQuestion("");
+  };
+
+  return (
+    <div style={detailBoxStyle}>
+      <h3 style={smallHeadingStyle}>AI Travel Assistant</h3>
+
+      <div
+        style={{
+          height: 400,
+          overflowY: "auto",
+          border: "1px solid #e2e8f0",
+          borderRadius: 12,
+          padding: 12,
+          marginBottom: 12,
+          background: "#f8fafc",
+        }}
+      >
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            style={{
+              marginBottom: 10,
+              textAlign:
+                msg.role === "user"
+                  ? "right"
+                  : "left",
+            }}
+          >
+            <strong>
+              {msg.role === "user"
+                ? "You"
+                : "Assistant"}
+            </strong>
+
+            <div>{msg.content}</div>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 10,
+        }}
+      >
+        <input
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Ask about your trip..."
+          style={{
+            flex: 1,
+            height: "40px",
+            padding: "0px 12px",
+            border: "1px solid #cbd5e1",
+            borderRadius: "8px",
+            marginBottom: 0,
+          }}
+        />
+
+        <button
+          onClick={sendMessage}
+           style={{
+            width: "120px", 
+            height: "40px",
+            borderRadius: "8px",
+            marginBottom: 0,
+            backgroundColor: "#55b9a9",
+            color: "#ffffff",
+            cursor: "pointer",
+          }}
+        >
+          Ask
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(135deg, #e8eef5, #f9fafb)",
@@ -2067,7 +2235,7 @@ const detailBoxStyle = {
 
 const travelerSubTabRowStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
+  gridTemplateColumns: "repeat(4, 1fr)",
   gap: "8px",
   backgroundColor: "#f1f5f9",
   border: "1px solid #e2e8f0",
