@@ -46,27 +46,27 @@ const airports = [
   {
     code: "LAX",
     name: "Los Angeles International Airport",
-    map: "https://www.google.com/maps?q=LAX+Airport&output=embed",
+    map: "https://www.flylax.com/map#/",
   },
   {
     code: "SAN",
     name: "San Diego International Airport",
-    map: "https://www.google.com/maps?q=SAN+Airport&output=embed",
+    map: "https://www.flysfo.com/maps",
   },
   {
     code: "JFK",
     name: "John F. Kennedy International Airport",
-    map: "https://www.google.com/maps?q=JFK+Airport&output=embed",
+    map: "https://maps.jfkairport.com/",
   },
   {
     code: "PDX",
     name: "Portland International Airport",
-    map: "https://www.google.com/maps?q=PDX+Airport&output=embed",
+    map: "https://www.flypdx.com/map",
   },
   {
     code: "SEA",
     name: "Seattle-Tacoma International Airport",
-    map: "https://www.google.com/maps?q=SEA+Airport&output=embed",
+    map: "https://maps.flysea.org/",
   },
 ];
 
