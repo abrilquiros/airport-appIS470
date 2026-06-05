@@ -1,0 +1,583 @@
+import { useEffect, useState } from "react";
+
+const demoLiveFlights = {
+  American: { 
+    flight: "AA123", 
+    status: "On Time", 
+    gate: "B12", 
+    terminal: "2", 
+    boarding: "2:30 PM", 
+    baggageClaim: "Carousel 5", 
+    delay: "No delay reported", 
+    departureAirport: "Los Angeles International Airport", 
+    arrivalAirport: "John F. Kennedy International Airport" 
+  },
+  Delta: { 
+    flight: "DL456", 
+    status: "Delayed", 
+    gate: "C4", 
+    terminal: "1", 
+    boarding: "4:10 PM", 
+    baggageClaim: "Carousel 9", 
+    delay: "25 minutes", 
+    departureAirport: "San Diego International Airport", 
+    arrivalAirport: "Seattle-Tacoma International Airport" 
+  },
+  United: { 
+    flight: "UA789", 
+    status: "Boarding Soon", 
+    gate: "A8", 
+    terminal: "3", 
+    boarding: "6:45 PM", 
+    baggageClaim: "Carousel 2", 
+    delay: "No delay reported", 
+    departureAirport: "Portland International Airport", 
+    arrivalAirport: "Los Angeles International Airport" 
+  }
+};
+
+// Alternative Flights Database for rebooking
+const alternativeFlightsDB = {
+  "LAX-JFK": [
+    { id: 1, airline: "Delta", flight: "DL678", time: "4:30 PM", price: "$295", gate: "C12", terminal: "2" },
+    { id: 2, airline: "United", flight: "UA456", time: "6:15 PM", price: "$312", gate: "A22", terminal: "3" },
+    { id: 3, airline: "JetBlue", flight: "B6 100", time: "5:45 PM", price: "$278", gate: "E8", terminal: "5" }
+  ],
+  "SAN-SEA": [
+    { id: 4, airline: "Alaska", flight: "AS345", time: "5:30 PM", price: "$189", gate: "D7", terminal: "2" },
+    { id: 5, airline: "United", flight: "UA890", time: "7:00 PM", price: "$210", gate: "B3", terminal: "1" },
+    { id: 6, airline: "Southwest", flight: "WN456", time: "6:15 PM", price: "$175", gate: "C2", terminal: "1" }
+  ],
+  "PDX-LAX": [
+    { id: 7, airline: "Southwest", flight: "WN1234", time: "8:00 PM", price: "$145", gate: "C2", terminal: "1" },
+    { id: 8, airline: "Alaska", flight: "AS567", time: "9:15 PM", price: "$158", gate: "B8", terminal: "2" }
+  ]
+};
+
+function App() {
+  const [selectedAirline, setSelectedAirline] = useState("Delta");
+  const [showAlternatives, setShowAlternatives] = useState(false);
+  const [selectedAlternative, setSelectedAlternative] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  const flightData = demoLiveFlights[selectedAirline];
+
+  // Detect delays and show alternative flights automatically
+  useEffect(() => {
+    if (flightData.delay && flightData.delay !== "No delay reported") {
+      const match = flightData.delay.match(/(\d+)/);
+      if (match && parseInt(match[0]) >= 25) {
+        setShowAlternatives(true);
+      }
+    }
+  }, [flightData.delay]);
+
+  const getAlternatives = () => {
+    const depCode = flightData.departureAirport?.substring(0, 3) || "SAN";
+    const arrCode = flightData.arrivalAirport?.substring(0, 3) || "SEA";
+    const key = `${depCode}-${arrCode}`;
+    return alternativeFlightsDB[key] || [];
+  };
+
+  const handleConfirmFlight = () => {
+    if (!selectedAlternative) return;
+    setIsBooking(true);
+    setTimeout(() => {
+      alert(`✓ Flight ${selectedAlternative.flight} confirmed! New boarding pass will be issued.`);
+      setIsBooking(false);
+      setShowAlternatives(false);
+      setSelectedAlternative(null);
+    }, 1500);
+  };
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <h1 style={styles.title}>✈️ Air Travel Assist</h1>
+        <p style={styles.subtitle}>Real-time alternative flight recommendations</p>
+      </div>
+
+      {/* Alternative Flights Modal */}
+      {showAlternatives && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <div style={styles.modalHeader}>
+              <div>
+                <span style={styles.warningIcon}>⚠️</span>
+                <h3 style={styles.modalTitle}>Flight Disruption - Rebooking Options</h3>
+              </div>
+              <button onClick={() => setShowAlternatives(false)} style={styles.closeBtn}>✕</button>
+            </div>
+            
+            <div style={styles.delayBadge}>
+              <strong>⏰ {flightData.delay}</strong>
+            </div>
+            
+            <p style={styles.modalText}>
+              We've found {getAlternatives().length} alternative {getAlternatives().length === 1 ? 'flight' : 'flights'} for your route.
+              Select one below to rebook instantly.
+            </p>
+            
+            <div style={styles.alternativesList}>
+              {getAlternatives().map(alt => (
+                <div
+                  key={alt.id}
+                  onClick={() => setSelectedAlternative(alt)}
+                  onMouseEnter={() => setHoveredCard(alt.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  style={{
+                    ...styles.alternativeCard,
+                    ...(selectedAlternative?.id === alt.id ? styles.selectedCard : {}),
+                    ...(hoveredCard === alt.id && !selectedAlternative?.id === alt.id ? styles.hoverCard : {})
+                  }}
+                >
+                  <div style={styles.cardHeader}>
+                    <div>
+                      <strong style={styles.airlineName}>{alt.airline}</strong>
+                      <span style={styles.flightNumber}>{alt.flight}</span>
+                    </div>
+                    <strong style={styles.price}>{alt.price}</strong>
+                  </div>
+                  <div style={styles.cardDetails}>
+                    <span>{alt.time}</span>
+                    <span style={styles.arrow}>→</span>
+                    <span>Gate {alt.gate}</span>
+                    <span style={styles.dot}>•</span>
+                    <span>Terminal {alt.terminal}</span>
+                  </div>
+                  {selectedAlternative?.id === alt.id && (
+                    <div style={styles.selectedIndicator}>✓ Selected</div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <div style={styles.modalFooter}>
+              <button
+                onClick={handleConfirmFlight}
+                disabled={!selectedAlternative || isBooking}
+                style={{
+                  ...styles.confirmBtn,
+                  ...((!selectedAlternative || isBooking) ? styles.disabledBtn : {})
+                }}
+              >
+                {isBooking ? "⏳ Booking..." : `✓ Confirm ${selectedAlternative?.flight || 'Flight'}`}
+              </button>
+              <button onClick={() => setShowAlternatives(false)} style={styles.dismissBtn}>
+                Ask at Counter Instead
+              </button>
+            </div>
+            
+            <p style={styles.footerNote}>
+              No change fees for disruption rebooking. Seat assignments will be preserved when possible.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Card */}
+      <div style={styles.card}>
+        <label style={styles.label}>Select Airline</label>
+        <select
+          value={selectedAirline}
+          onChange={(e) => setSelectedAirline(e.target.value)}
+          style={styles.select}
+        >
+          <option value="American">✈️ American Airlines</option>
+          <option value="Delta">🔺 Delta Airlines</option>
+          <option value="United">🟦 United Airlines</option>
+        </select>
+
+        <div style={styles.flightInfo}>
+          <div style={styles.infoHeader}>
+            <h3 style={styles.sectionTitle}>Current Flight Details</h3>
+            <span style={styles.liveBadge}>LIVE</span>
+          </div>
+          
+          <div style={styles.infoGrid}>
+            <div style={styles.infoRow}>
+              <span style={styles.infoLabel}>Flight Number:</span>
+              <strong style={styles.infoValue}>{flightData.flight}</strong>
+            </div>
+            <div style={styles.infoRow}>
+              <span style={styles.infoLabel}>Status:</span>
+              <span style={flightData.status === "Delayed" ? styles.delayedStatus : styles.normalStatus}>
+                {flightData.status}
+              </span>
+            </div>
+            <div style={styles.infoRow}>
+              <span style={styles.infoLabel}>Gate:</span>
+              <strong style={styles.infoValue}>{flightData.gate}</strong>
+            </div>
+            <div style={styles.infoRow}>
+              <span style={styles.infoLabel}>Terminal:</span>
+              <strong style={styles.infoValue}>{flightData.terminal}</strong>
+            </div>
+            <div style={styles.infoRow}>
+              <span style={styles.infoLabel}>Boarding Time:</span>
+              <strong style={styles.infoValue}>{flightData.boarding}</strong>
+            </div>
+            <div style={styles.infoRow}>
+              <span style={styles.infoLabel}>Delay:</span>
+              <span style={flightData.delay !== "No delay reported" ? styles.delayedStatus : styles.normalStatus}>
+                {flightData.delay}
+              </span>
+            </div>
+          </div>
+          
+          <div style={styles.routeBox}>
+            <div style={styles.routePoint}>
+              <span style={styles.routeLabel}>From</span>
+              <strong>{flightData.departureAirport}</strong>
+            </div>
+            <div style={styles.routeArrow}>→</div>
+            <div style={styles.routePoint}>
+              <span style={styles.routeLabel}>To</span>
+              <strong>{flightData.arrivalAirport}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={styles.featureBox}>
+        <div style={styles.featureIcon}>🔄</div>
+        <div style={styles.featureContent}>
+          <h4 style={styles.featureTitle}>Automatic Alternative Flights</h4>
+          <p style={styles.featureText}>
+            When a delay of 25+ minutes is detected, alternative flight options will appear automatically.
+            Select any alternative to rebook instantly.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    fontFamily: "'-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', sans-serif",
+    padding: "40px 20px"
+  },
+  header: {
+    textAlign: "center",
+    marginBottom: "40px"
+  },
+  title: {
+    color: "white",
+    fontSize: "48px",
+    marginBottom: "10px",
+    fontWeight: "700",
+    textShadow: "2px 2px 4px rgba(0,0,0,0.2)"
+  },
+  subtitle: {
+    color: "#e0e0e0",
+    fontSize: "18px",
+    fontWeight: "500"
+  },
+  card: {
+    maxWidth: "550px",
+    margin: "0 auto",
+    backgroundColor: "white",
+    borderRadius: "20px",
+    padding: "30px",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+    transition: "transform 0.3s ease"
+  },
+  label: {
+    display: "block",
+    fontWeight: "600",
+    marginBottom: "10px",
+    color: "#333",
+    fontSize: "16px"
+  },
+  select: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "2px solid #e0e0e0",
+    fontSize: "16px",
+    marginBottom: "25px",
+    backgroundColor: "white",
+    cursor: "pointer",
+    transition: "border-color 0.3s",
+    fontWeight: "500"
+  },
+  flightInfo: {
+    borderTop: "2px solid #f0f0f0",
+    paddingTop: "20px"
+  },
+  infoHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px"
+  },
+  sectionTitle: {
+    margin: 0,
+    color: "#333",
+    fontSize: "18px"
+  },
+  liveBadge: {
+    backgroundColor: "#e74c3c",
+    color: "white",
+    padding: "4px 10px",
+    borderRadius: "20px",
+    fontSize: "12px",
+    fontWeight: "bold"
+  },
+  infoGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "12px",
+    marginBottom: "20px"
+  },
+  infoRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "10px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "10px"
+  },
+  infoLabel: {
+    color: "#666",
+    fontWeight: "500",
+    fontSize: "13px"
+  },
+  infoValue: {
+    color: "#333",
+    fontSize: "14px"
+  },
+  delayedStatus: {
+    color: "#e74c3c",
+    fontWeight: "bold",
+    fontSize: "14px"
+  },
+  normalStatus: {
+    color: "#27ae60",
+    fontWeight: "bold",
+    fontSize: "14px"
+  },
+  routeBox: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f0f4ff",
+    padding: "15px",
+    borderRadius: "12px",
+    marginTop: "15px"
+  },
+  routePoint: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    flex: 1
+  },
+  routeLabel: {
+    fontSize: "11px",
+    color: "#666",
+    textTransform: "uppercase",
+    letterSpacing: "1px"
+  },
+  routeArrow: {
+    fontSize: "24px",
+    color: "#667eea",
+    fontWeight: "bold"
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+    animation: "fadeIn 0.3s ease"
+  },
+  modal: {
+    backgroundColor: "white",
+    borderRadius: "24px",
+    maxWidth: "550px",
+    width: "90%",
+    padding: "28px",
+    boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
+    animation: "slideUp 0.3s ease"
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px"
+  },
+  warningIcon: {
+    fontSize: "28px",
+    marginRight: "10px"
+  },
+  modalTitle: {
+    margin: 0,
+    color: "#e74c3c",
+    fontSize: "20px",
+    display: "inline"
+  },
+  closeBtn: {
+    background: "none",
+    border: "none",
+    fontSize: "28px",
+    cursor: "pointer",
+    color: "#999",
+    padding: "0 8px",
+    transition: "color 0.3s"
+  },
+  delayBadge: {
+    backgroundColor: "#fef3c7",
+    padding: "14px",
+    borderRadius: "12px",
+    textAlign: "center",
+    marginBottom: "20px",
+    borderLeft: "4px solid #f59e0b"
+  },
+  modalText: {
+    marginBottom: "16px",
+    color: "#333",
+    lineHeight: "1.5"
+  },
+  alternativesList: {
+    maxHeight: "350px",
+    overflowY: "auto",
+    marginBottom: "20px",
+    gap: "12px",
+    display: "flex",
+    flexDirection: "column"
+  },
+  alternativeCard: {
+    border: "2px solid #e8e8e8",
+    borderRadius: "14px",
+    padding: "16px",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    backgroundColor: "white"
+  },
+  selectedCard: {
+    border: "2px solid #27ae60",
+    backgroundColor: "#e8f5e9"
+  },
+  hoverCard: {
+    border: "2px solid #667eea",
+    transform: "translateX(4px)"
+  },
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px"
+  },
+  airlineName: {
+    fontSize: "16px",
+    marginRight: "10px"
+  },
+  flightNumber: {
+    color: "#666",
+    fontSize: "13px"
+  },
+  price: {
+    color: "#27ae60",
+    fontSize: "18px",
+    fontWeight: "bold"
+  },
+  cardDetails: {
+    display: "flex",
+    gap: "12px",
+    fontSize: "13px",
+    color: "#666",
+    alignItems: "center"
+  },
+  arrow: {
+    color: "#999"
+  },
+  dot: {
+    color: "#999"
+  },
+  selectedIndicator: {
+    marginTop: "10px",
+    textAlign: "right",
+    color: "#27ae60",
+    fontWeight: "bold",
+    fontSize: "13px"
+  },
+  modalFooter: {
+    display: "flex",
+    gap: "12px",
+    marginTop: "20px"
+  },
+  confirmBtn: {
+    flex: 2,
+    padding: "14px",
+    backgroundColor: "#27ae60",
+    color: "white",
+    border: "none",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "15px",
+    transition: "background 0.3s"
+  },
+  dismissBtn: {
+    flex: 1,
+    padding: "14px",
+    backgroundColor: "#f1f5f9",
+    color: "#333",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "500",
+    transition: "background 0.3s"
+  },
+  disabledBtn: {
+    backgroundColor: "#94a3b8",
+    cursor: "not-allowed"
+  },
+  footerNote: {
+    fontSize: "11px",
+    color: "#64748b",
+    textAlign: "center",
+    marginTop: "16px",
+    paddingTop: "12px",
+    borderTop: "1px solid #eee"
+  },
+  featureBox: {
+    maxWidth: "550px",
+    margin: "30px auto 0",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderRadius: "16px",
+    padding: "20px",
+    display: "flex",
+    gap: "15px",
+    backdropFilter: "blur(10px)"
+  },
+  featureIcon: {
+    fontSize: "32px"
+  },
+  featureContent: {
+    flex: 1
+  },
+  featureTitle: {
+    margin: 0,
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold"
+  },
+  featureText: {
+    margin: "5px 0 0",
+    color: "#e0e0e0",
+    fontSize: "13px",
+    lineHeight: "1.4"
+  }
+};
+
+export default App;

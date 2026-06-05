@@ -44,29 +44,34 @@ const demoLiveFlights = {
 
 const airports = [
   {
+];
     code: "LAX",
     name: "Los Angeles International Airport",
-    map: "https://www.flylax.com/map#/",
+    map: "https://www.google.com/maps?q=LAX+Airport&output=embed",
   },
   {
+];
     code: "SAN",
     name: "San Diego International Airport",
-    map: "https://www.flysfo.com/maps",
+    map: "https://www.google.com/maps?q=SAN+Airport&output=embed",
   },
   {
+];
     code: "JFK",
     name: "John F. Kennedy International Airport",
-    map: "https://maps.jfkairport.com/",
+    map: "https://www.google.com/maps?q=JFK+Airport&output=embed",
   },
   {
+];
     code: "PDX",
     name: "Portland International Airport",
-    map: "https://www.flypdx.com/map",
+    map: "https://www.google.com/maps?q=PDX+Airport&output=embed",
   },
   {
+];
     code: "SEA",
     name: "Seattle-Tacoma International Airport",
-    map: "https://maps.flysea.org/",
+    map: "https://www.google.com/maps?q=SEA+Airport&output=embed",
   },
 ];
 
@@ -182,18 +187,21 @@ const airportCrowdLevels = {
     summary: "Moderate traffic near main security, lighter crowds near Gates B10-B13.",
     areas: [
       {
+];
         name: "Terminal 2 Security",
         level: "Medium",
         waitTime: "18 min",
         recommendation: "Use south checkpoint for shorter lines.",
       },
       {
+];
         name: "Gate B12 Concourse",
         level: "Low",
         waitTime: "Open seating",
         recommendation: "Good area to wait before boarding.",
       },
       {
+];
         name: "Baggage Claim",
         level: "Medium",
         waitTime: "12 min",
@@ -207,18 +215,21 @@ const airportCrowdLevels = {
     summary: "Morning crowding is easing, but coffee and security lines are still moderate.",
     areas: [
       {
+];
         name: "Terminal 1 Security",
         level: "Medium",
         waitTime: "16 min",
         recommendation: "Arrive early if checking bags.",
       },
       {
+];
         name: "Gate C4 Area",
         level: "Low",
         waitTime: "Open seating",
         recommendation: "Best place to wait for updates.",
       },
       {
+];
         name: "Food Court",
         level: "High",
         waitTime: "20 min",
@@ -232,18 +243,21 @@ const airportCrowdLevels = {
     summary: "High congestion at security due to weather delays and connecting traffic.",
     areas: [
       {
+];
         name: "Main Security",
         level: "High",
         waitTime: "32 min",
         recommendation: "Use alternate checkpoint if available.",
       },
       {
+];
         name: "Gate B Concourse",
         level: "Medium",
         waitTime: "Limited seating",
         recommendation: "Move toward upper concourse for more space.",
       },
       {
+];
         name: "Customer Service Desk",
         level: "High",
         waitTime: "25 min",
@@ -257,18 +271,21 @@ const airportCrowdLevels = {
     summary: "Terminal traffic is light with small delays near rideshare pickup.",
     areas: [
       {
+];
         name: "Terminal 3 Security",
         level: "Low",
         waitTime: "8 min",
         recommendation: "Normal checkpoint flow.",
       },
       {
+];
         name: "Gate A8 Area",
         level: "Low",
         waitTime: "Open seating",
         recommendation: "Best area for a calm wait.",
       },
       {
+];
         name: "Ground Transportation",
         level: "Medium",
         waitTime: "15 min",
@@ -282,18 +299,21 @@ const airportCrowdLevels = {
     summary: "Moderate crowding around central terminal, lighter traffic near satellite gates.",
     areas: [
       {
+];
         name: "Central Security",
         level: "Medium",
         waitTime: "19 min",
         recommendation: "Check alternate checkpoint before entering line.",
       },
       {
+];
         name: "North Satellite",
         level: "Low",
         waitTime: "Open seating",
         recommendation: "Less crowded waiting area.",
       },
       {
+];
         name: "Dining Hall",
         level: "Medium",
         waitTime: "14 min",
@@ -306,6 +326,7 @@ const airportCrowdLevels = {
 const gateRestaurantRecommendations = {
   American: [
     {
+];
       name: "Terminal 2 Market Cafe",
       type: "Coffee and breakfast",
       location: "Terminal 2, near Gate B10",
@@ -314,6 +335,7 @@ const gateRestaurantRecommendations = {
       status: "Open",
     },
     {
+];
       name: "Runway Grill",
       type: "Burgers and sandwiches",
       location: "Terminal 2, Gate B14 food court",
@@ -322,6 +344,7 @@ const gateRestaurantRecommendations = {
       status: "Open",
     },
     {
+];
       name: "Fresh To Fly",
       type: "Salads and grab-and-go",
       location: "Terminal 2, between Gates B11-B13",
@@ -332,6 +355,7 @@ const gateRestaurantRecommendations = {
   ],
   Delta: [
     {
+];
       name: "Coastal Coffee Bar",
       type: "Coffee and pastries",
       location: "Terminal 1, near Gate C3",
@@ -340,6 +364,7 @@ const gateRestaurantRecommendations = {
       status: "Open",
     },
     {
+];
       name: "Pacific Noodle House",
       type: "Noodles and rice bowls",
       location: "Terminal 1, Gate C5 concourse",
@@ -348,6 +373,7 @@ const gateRestaurantRecommendations = {
       status: "Busy",
     },
     {
+];
       name: "Skyline Deli",
       type: "Sandwiches and bottled drinks",
       location: "Terminal 1, across from Gate C4",
@@ -358,23 +384,9 @@ const gateRestaurantRecommendations = {
   ],
   United: [
     {
+];
       name: "Aero Tacos",
       type: "Tacos and bowls",
-      location: "Terminal 3, near Gate A7",
-      walkTime: "3 min walk",
-      bestFor: "Quick full meal",
-      status: "Open",
-    },
-    {
-      name: "Cloud City Coffee",
-      type: "Coffee and tea",
-      location: "Terminal 3, Gate A9 kiosk",
-      walkTime: "2 min walk",
-      bestFor: "Pre-boarding drink",
-      status: "Open",
-    },
-    {
-      name: "Northwest Fresh",
       type: "Wraps and fruit cups",
       location: "Terminal 3, between Gates A8-A10",
       walkTime: "4 min walk",
@@ -386,6 +398,7 @@ const gateRestaurantRecommendations = {
 
 const airportActivities = [
   {
+];
     id: "ACT-COFFEE",
     name: "Coffee before boarding",
     category: "Dining",
@@ -394,14 +407,17 @@ const airportActivities = [
     bestTime: "Before boarding",
   },
   {
+];
     id: "ACT-MEAL",
     name: "Quick meal",
     category: "Dining",
     location: "Terminal food court",
+
     duration: "30 min",
     bestTime: "Layover or delay",
   },
   {
+];
     id: "ACT-SHOP",
     name: "Travel essentials shopping",
     category: "Shopping",
@@ -410,6 +426,7 @@ const airportActivities = [
     bestTime: "Before security or near gate",
   },
   {
+];
     id: "ACT-GIFT",
     name: "Gift and souvenir stop",
     category: "Shopping",
@@ -418,6 +435,7 @@ const airportActivities = [
     bestTime: "Short layover",
   },
   {
+];
     id: "ACT-LOUNGE",
     name: "Quiet lounge break",
     category: "Entertainment",
@@ -426,17 +444,21 @@ const airportActivities = [
     bestTime: "Long wait",
   },
   {
+];
     id: "ACT-WALK",
     name: "Terminal walk",
     category: "Entertainment",
     location: "Connected concourses",
     duration: "20 min",
     bestTime: "Before sitting at gate",
+  }
+];
   },
 ];
 
 const customerInquiries = [
   {
+];
     id: 1,
     passenger: "Maria Lopez",
     type: "Baggage",
@@ -444,6 +466,7 @@ const customerInquiries = [
     message: "My luggage did not arrive at baggage claim.",
   },
   {
+];
     id: 2,
     passenger: "James Smith",
     type: "Flight Status",
@@ -451,6 +474,7 @@ const customerInquiries = [
     message: "Is my flight still delayed?",
   },
   {
+];
     id: 3,
     passenger: "Ana Garcia",
     type: "Gate",
@@ -461,6 +485,7 @@ const customerInquiries = [
 
 const boardingPasses = [
   {
+];
     id: "BP-001",
     tripStatus: "Active Trip",
     passenger: "Maria Lopez",
@@ -478,6 +503,7 @@ const boardingPasses = [
     barcode: "AA123-MLOPEZ-14A-LAXJFK",
   },
   {
+];
     id: "BP-002",
     tripStatus: "Upcoming Trip",
     passenger: "James Smith",
@@ -495,6 +521,7 @@ const boardingPasses = [
     barcode: "DL456-JSMITH-22C-SANSEA",
   },
   {
+];
     id: "BP-003",
     tripStatus: "Upcoming Trip",
     passenger: "Ana Garcia",
@@ -536,122 +563,53 @@ const notificationTypes = {
   },
 };
 
-// ============================================
-// ALTERNATIVE FLIGHTS FEATURE - ADDED CODE
-// ============================================
-
-// Alternative Flights Database for real-time rebooking
-const alternativeFlightsDB = {
-  "LAX-JFK": [
-    { id: 1, airline: "Delta", flight: "DL678", time: "4:30 PM", price: "$295", gate: "C12", terminal: "2" },
-    { id: 2, airline: "United", flight: "UA456", time: "6:15 PM", price: "$312", gate: "A22", terminal: "3" },
-    { id: 3, airline: "JetBlue", flight: "B6 100", time: "5:45 PM", price: "$278", gate: "E8", terminal: "5" }
-  ],
-  "SAN-SEA": [
-    { id: 4, airline: "Alaska", flight: "AS345", time: "5:30 PM", price: "$189", gate: "D7", terminal: "2" },
-    { id: 5, airline: "United", flight: "UA890", time: "7:00 PM", price: "$210", gate: "B3", terminal: "1" },
-    { id: 6, airline: "Southwest", flight: "WN456", time: "6:15 PM", price: "$175", gate: "C2", terminal: "1" }
-  ],
-  "PDX-LAX": [
-    { id: 7, airline: "Southwest", flight: "WN1234", time: "8:00 PM", price: "$145", gate: "C2", terminal: "1" },
-    { id: 8, airline: "Alaska", flight: "AS567", time: "9:15 PM", price: "$158", gate: "B8", terminal: "2" }
-  ]
-};
-
-// Alternative Flights Panel Component
-function AlternativeFlightsPanel({ currentFlight, onDismiss }) {
-  const [selectedAlt, setSelectedAlt] = useState(null);
-  const [booking, setBooking] = useState(false);
-  
-  const depCode = currentFlight.departureAirport?.substring(0, 3) || "LAX";
-  const arrCode = currentFlight.arrivalAirport?.substring(0, 3) || "JFK";
-  const routeKey = `${depCode}-${arrCode}`;
-  const alternatives = alternativeFlightsDB[routeKey] || [];
-  
-  const handleConfirm = () => {
-    if (!selectedAlt) return;
-    setBooking(true);
-    setTimeout(() => {
-      alert(`✓ Flight ${selectedAlt.flight} confirmed! New boarding pass will be issued.`);
-      setBooking(false);
-      onDismiss();
-    }, 1500);
-  };
-  
-  if (alternatives.length === 0) {
-    return (
-      <div style={altOverlayStyle}>
-        <div style={altModalStyle}>
-          <h3>⚠️ Flight Disruption</h3>
-          <p>No alternative flights available. Please see an agent.</p>
-          <button onClick={onDismiss} style={{padding:10, background:'#475569', color:'white', border:'none', borderRadius:8, cursor:'pointer', marginTop:16}}>Close</button>
-        </div>
-      </div>
-    );
-  }
-  
-  return (
-    <div style={altOverlayStyle}>
-      <div style={altModalStyle}>
-        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
-          <h3 style={{margin:0, color:'#9a3412'}}>⚠️ Flight Disruption - Rebooking Options</h3>
-          <button onClick={onDismiss} style={{background:'none', border:'none', fontSize:24, cursor:'pointer'}}>✕</button>
-        </div>
-        
-        <div style={{background:'#fef3c7', padding:12, borderRadius:10, marginBottom:16, textAlign:'center'}}>
-          <strong>⏰ {currentFlight.delay !== "No delay reported" ? `Delayed: ${currentFlight.delay}` : "Flight Disruption Detected"}</strong>
-        </div>
-        
-        <p>Select an alternative flight to rebook instantly:</p>
-        
-        <div style={{maxHeight:350, overflowY:'auto', marginBottom:16}}>
-          {alternatives.map(alt => (
-            <div 
-              key={alt.id} 
-              onClick={() => setSelectedAlt(alt)} 
-              style={{
-                border: selectedAlt?.id === alt.id ? '2px solid #166534' : '1px solid #e2e8f0',
-                borderRadius:12, padding:12, marginBottom:10, cursor:'pointer',
-                background: selectedAlt?.id === alt.id ? '#f0fdf4' : 'white'
-              }}
-            >
-              <div style={{display:'flex', justifyContent:'space-between', marginBottom:8}}>
-                <strong>{alt.airline} {alt.flight}</strong>
-                <strong style={{color:'#166534'}}>{alt.price}</strong>
-              </div>
-              <div style={{fontSize:14}}>{alt.time} | Gate {alt.gate} | Terminal {alt.terminal}</div>
-            </div>
-          ))}
-        </div>
-        
-        <div style={{display:'flex', gap:12}}>
-          <button onClick={handleConfirm} disabled={!selectedAlt || booking} style={{
-            flex:2, padding:12, background: !selectedAlt || booking ? '#94a3b8' : '#166534',
-            color:'white', border:'none', borderRadius:8, cursor: !selectedAlt || booking ? 'not-allowed' : 'pointer', fontWeight:'bold'
-          }}>
-            {booking ? 'Booking...' : `Confirm ${selectedAlt?.flight || 'Flight'}`}
-          </button>
-          <button onClick={onDismiss} style={{flex:1, padding:12, background:'#f1f5f9', color:'#334155', border:'1px solid #cbd5e1', borderRadius:8, cursor:'pointer'}}>
-            Dismiss
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// END OF ALTERNATIVE FLIGHTS FEATURE
-// ============================================
 
 function PassengerNotifications({ notifications, onMarkRead }) {
   if (notifications.length === 0) {
     return <p>No passenger notifications yet.</p>;
+      {showAlternatives && (
+];
+        <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:10001}}>
+          <div style={{background:"white",borderRadius:20,maxWidth:450,width:"90%",padding:24}}>
+            <h3 style={{margin:"0 0 16px",color:"#9a3412"}}>⚠️ Flight Disruption</h3>
+            <div style={{background:"#fef3c7",padding:12,borderRadius:8,marginBottom:16}}>
+              <strong>⏰ {displayFlightInfo.delay}</strong>
+            </div>
+            <p>Select an alternative flight:</p>
+            {(() => {
+];
+              const depCode = displayFlightInfo.departureAirport?.substring(0,3) || "LAX";
+              const arrCode = displayFlightInfo.arrivalAirport?.substring(0,3) || "JFK";
+              const key = `${depCode}-${arrCode}`;
+              const options = alternativeFlights[key] || [];
+              return options.map(alt => (
+                <div key={alt.id} onClick={() => setSelectedAlternative(alt)} style={{border:selectedAlternative?.id===alt.id?"2px solid #166534":"1px solid #e2e8f0",borderRadius:12,padding:12,marginBottom:10,cursor:"pointer",background:selectedAlternative?.id===alt.id?"#f0fdf4":"white"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                    <strong>{alt.airline} {alt.flight}</strong>
+                    <strong style={{color:"#166534"}}>{alt.price}</strong>
+                  </div>
+                  <div style={{fontSize:14}}>{alt.time} | Gate {alt.gate}</div>
+                </div>
+              ));
+            })()}
+            <div style={{display:"flex",gap:12,marginTop:16}}>
+              <button onClick={()=>{if(!selectedAlternative)return;setIsBooking(true);setTimeout(()=>{alert(`✓ Flight ${selectedAlternative.flight} confirmed!`);setIsBooking(false);setShowAlternatives(false);setSelectedAlternative(null);},1500);}} disabled={!selectedAlternative||isBooking} style={{flex:2,padding:12,background:!selectedAlternative||isBooking?"#94a3b8":"#166534",color:"white",border:"none",borderRadius:8,cursor:!selectedAlternative||isBooking?"not-allowed":"pointer"}}>
+                {isBooking ? "Booking..." : "Confirm Flight"}
+];
+              </button>
+              <button onClick={()=>setShowAlternatives(false)} style={{flex:1,padding:12,background:"#f1f5f9",border:"1px solid #cbd5e1",borderRadius:8,cursor:"pointer"}}>
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
   }
 
   return (
     <div style={notificationListStyle}>
       {notifications.map((item) => (
+];
         <div
           key={item.id}
           style={item.read ? readNotificationStyle : unreadNotificationStyle}
@@ -660,6 +618,7 @@ function PassengerNotifications({ notifications, onMarkRead }) {
           <p style={notificationMessageStyle}>{item.notification.message}</p>
           <span style={smallLabelStyle}>Flight {item.flight}</span>
           {!item.read && (
+];
             <button
               onClick={() => onMarkRead(item.id)}
               style={markReadButtonStyle}
@@ -700,8 +659,10 @@ function BoardingNotificationPanel({ onSendNotification, selectedFlight }) {
       <label style={labelStyle}>Notification Type</label>
       <select value={type} onChange={handleTypeChange} style={inputStyle}>
         {Object.entries(notificationTypes).map(([key, item]) => (
+];
           <option key={key} value={key}>
             {item.label}
+];
           </option>
         ))}
       </select>
@@ -743,10 +704,13 @@ function App() {
   const [announcement, setAnnouncement] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
   const [plannedActivities, setPlannedActivities] = useState([]);
-  const [showAlternatives, setShowAlternatives] = useState(false);
   const [aiMessages, setAiMessages] = useState([
     {
+];
       role: "assistant",
+  const [showAlternatives, setShowAlternatives] = useState(false);
+  const [selectedAlternative, setSelectedAlternative] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
       content:
         "Hello! I can help with flight status, gates, boarding, weather, crowd levels, restaurants, baggage claim, and airport services.",
     },
@@ -876,21 +840,22 @@ function App() {
 
     const refreshTimer = setInterval(fetchLiveFlightData, REFRESH_INTERVAL_MS);
     return () => clearInterval(refreshTimer);
-  }, [autoRefresh, fetchLiveFlightData]);
 
   // Detect delays and show alternative flights
   useEffect(() => {
     if (liveFlightData.delay && liveFlightData.delay !== "No delay reported") {
-      const delayMatch = liveFlightData.delay.match(/(\d+)/);
-      if (delayMatch && parseInt(delayMatch[0]) >= 25) {
+      const match = liveFlightData.delay.match(/(\d+)/);
+      if (match && parseInt(match[0]) >= 25) {
         setShowAlternatives(true);
       }
     }
   }, [liveFlightData]);
+  }, [autoRefresh, fetchLiveFlightData]);
 
   useEffect(() => {
     const emergencyAlerts = [
       {
+];
         title: "Security Alert",
         message: `Security incident reported at Terminal ${displayFlightInfo.terminal}. Authorities are responding.`,
         severity: "high",
@@ -900,6 +865,7 @@ function App() {
         } is the safe area.`,
       },
       {
+];
         title: "Severe Weather Warning",
         message: "Tornado warning issued for airport area. Seek shelter immediately.",
         severity: "high",
@@ -908,6 +874,7 @@ function App() {
         safeArea: "Basement level, interior hallways, or storm shelters in Terminal 1",
       },
       {
+];
         title: "Flight Delay Alert",
         message: `Your flight ${displayFlightInfo.flight} is delayed due to severe weather conditions.`,
         severity: "medium",
@@ -995,14 +962,8 @@ function App() {
 
   return (
     <div style={pageStyle}>
-      {showAlternatives && (
-        <AlternativeFlightsPanel 
-          currentFlight={displayFlightInfo} 
-          onDismiss={() => setShowAlternatives(false)} 
-        />
-      )}
-      
       {showAlert && currentAlert && (
+];
         <div style={alertOverlayStyle}>
           <div
             style={{
@@ -1041,6 +1002,7 @@ function App() {
       )}
 
       {broadcastMessage && (
+];
         <div style={broadcastBannerStyle}>
           <strong>Airport Announcement</strong>
           <div style={broadcastMessageStyle}>{broadcastMessage}</div>
@@ -1087,10 +1049,12 @@ function App() {
               style={refreshButtonStyle}
             >
               {isLoadingLiveData ? "Refreshing..." : "Refresh Now"}
+];
             </button>
           </div>
 
           {apiError && <p style={apiErrorStyle}>{apiError}</p>}
+];
 
           <label style={toggleLabelStyle}>
             <input
@@ -1134,6 +1098,7 @@ function App() {
             <h3 style={smallHeadingStyle}>Price Options</h3>
             <div style={priceGridStyle}>
               {Object.entries(flightInfo.prices).map(([name, price]) => (
+];
                 <div key={name} style={priceCardStyle}>
                   <strong>{name}</strong>
                   <span>{price}</span>
@@ -1170,6 +1135,7 @@ function App() {
           </div>
 
           {activeSection === "traveler" && (
+];
             <TravelerTools
               airports={airports}
               selectedAirline={selectedAirline}
@@ -1207,8 +1173,10 @@ function App() {
           )}
 
           {activeSection === "support" && <SupportPanel />}
+];
 
           {activeSection === "staff" && (
+];
             <StaffDashboard
               sentNotifications={sentNotifications}
               selectedFlight={displayFlightInfo.flight}
@@ -1319,6 +1287,7 @@ function TravelerTools({
       </div>
 
       {activeTravelerTool === "conditions" && (
+];
         <div style={travelerToolsGridStyle}>
           <AirportWeatherPanel
             airports={airports}
@@ -1336,6 +1305,7 @@ function TravelerTools({
       )}
 
       {activeTravelerTool === "activities" && (
+];
         <div style={travelerToolsGridStyle}>
           <RestaurantRecommendations
             flightInfo={displayFlightInfo}
@@ -1352,6 +1322,7 @@ function TravelerTools({
       )}
 
       {activeTravelerTool === "trip" && (
+];
         <div style={travelerToolsGridStyle}>
           <div style={travelerToolsColumnStyle}>
             <button
@@ -1359,15 +1330,18 @@ function TravelerTools({
               style={primaryButtonStyle}
             >
               {showPolicy ? "Hide Airline Policy" : "View Airline Policy"}
+];
             </button>
 
             {showPolicy && (
+];
               <div style={detailBoxStyle}>
                 <h3 style={smallHeadingStyle}>
                   Airline Policy - {selectedAirline}
                 </h3>
                 <ul>
                   {flightInfo.policy.map((item) => (
+];
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
@@ -1379,11 +1353,13 @@ function TravelerTools({
               style={secondaryButtonStyle}
             >
               {showBaggage
+];
                 ? "Hide Baggage Claim Information"
                 : "Check Baggage Claim Information"}
             </button>
 
             {showBaggage && (
+];
               <div style={detailBoxStyle}>
                 <h3 style={smallHeadingStyle}>Baggage Claim Information</h3>
                 <p>
@@ -1403,11 +1379,13 @@ function TravelerTools({
               style={thirdButtonStyle}
             >
               {showTransport
+];
                 ? "Hide Transportation Options"
                 : "View Transportation Options"}
             </button>
 
             {showTransport && (
+];
               <div style={detailBoxStyle}>
                 <h3 style={smallHeadingStyle}>Transportation Options</h3>
                 <ul>
@@ -1450,6 +1428,7 @@ function TravelerTools({
       )}
 
       {activeTravelerTool === "assistant" && (
+];
         <AIAssistant
           messages={aiMessages}
           setMessages={setAiMessages}
@@ -1490,8 +1469,10 @@ function AirportWeatherPanel({
         style={inputStyle}
       >
         {airports.map((airport) => (
+];
           <option key={airport.code} value={airport.code}>
             {airport.code} - {airport.name}
+];
           </option>
         ))}
       </select>
@@ -1540,6 +1521,7 @@ function AirportCrowdLevels({ airportInfo, crowdData }) {
 
       <div style={crowdAreaListStyle}>
         {crowdData.areas.map((area) => (
+];
           <div key={area.name} style={crowdAreaCardStyle}>
             <div style={crowdAreaTopRowStyle}>
               <strong>{area.name}</strong>
@@ -1584,6 +1566,7 @@ function RestaurantRecommendations({ flightInfo, restaurants }) {
 
       <div style={restaurantListStyle}>
         {restaurants.map((restaurant) => (
+];
           <div key={restaurant.name} style={restaurantCardStyle}>
             <div style={restaurantTopRowStyle}>
               <strong>{restaurant.name}</strong>
@@ -1595,6 +1578,7 @@ function RestaurantRecommendations({ flightInfo, restaurants }) {
                 }
               >
                 {restaurant.status}
+];
               </span>
             </div>
             <span style={smallLabelStyle}>{restaurant.type}</span>
@@ -1632,11 +1616,13 @@ function AirportActivityPlanner({
         </div>
         <span style={activityCountStyle}>
           {plannedActivities.length} planned
+];
         </span>
       </div>
 
       <div style={activityCatalogStyle}>
         {airportActivities.map((activity) => {
+];
           const alreadyPlanned = plannedActivities.some(
             (item) => item.id === activity.id
           );
@@ -1649,6 +1635,7 @@ function AirportActivityPlanner({
               </div>
               <p style={activityDetailStyle}>
                 {activity.location} at {airportInfo.code}
+];
               </p>
               <div style={activityMetaStyle}>
                 <span>{activity.duration}</span>
@@ -1664,6 +1651,7 @@ function AirportActivityPlanner({
                 }
               >
                 {alreadyPlanned ? "Added" : "Add to Schedule"}
+];
               </button>
             </div>
           );
@@ -1675,20 +1663,24 @@ function AirportActivityPlanner({
           <h4 style={activityScheduleTitleStyle}>My Airport Schedule</h4>
           <span style={activityTotalTimeStyle}>
             {totalMinutes} min planned
+];
           </span>
         </div>
 
         {plannedActivities.length === 0 ? (
+];
           <p style={activityEmptyStyle}>No activities added yet.</p>
         ) : (
           <div style={activityTimelineStyle}>
             {plannedActivities.map((activity, index) => (
+];
               <div key={activity.id} style={activityTimelineItemStyle}>
                 <span style={activityStepStyle}>{index + 1}</span>
                 <div style={activityTimelineTextStyle}>
                   <strong>{activity.name}</strong>
                   <span>
                     {activity.duration} - {activity.location}
+];
                   </span>
                 </div>
                 <button
@@ -1730,6 +1722,7 @@ function BoardingPassPanel({ selectedBoardingPass, setSelectedBoardingPassId }) 
 
       <div style={boardingPassListStyle}>
         {boardingPasses.map((pass) => (
+];
           <button
             key={pass.id}
             onClick={() => setSelectedBoardingPassId(pass.id)}
@@ -1771,6 +1764,7 @@ function BoardingPassPanel({ selectedBoardingPass, setSelectedBoardingPassId }) 
 
         <div style={boardingBarcodeStyle}>
           {[4, 4, 9, 4, 9, 4, 4, 9, 4, 4, 9, 4].map((width, index) => (
+];
             <span
               key={`${width}-${index}`}
               style={{ ...barcodeLineStyle, width: `${width}px` }}
@@ -1802,6 +1796,7 @@ function FavoriteAirports({
       <h3 style={smallHeadingStyle}>Favorite Airports</h3>
       <div style={buttonWrapStyle}>
         {airports.map((airport) => (
+];
           <div key={airport.code} style={airportActionStyle}>
             <button
               onClick={() => saveFavoriteLocation(airport.code)}
@@ -1818,16 +1813,20 @@ function FavoriteAirports({
 
       <h4>Saved Locations</h4>
       {favoriteLocations.length === 0 ? (
+];
         <p>No favorite airports saved yet.</p>
       ) : (
         <ul>
           {favoriteLocations.map((airportCode) => {
+];
             const airport = airports.find((item) => item.code === airportCode);
 
             return (
               <li key={airportCode} style={favoriteItemStyle}>
                 {airportCode}
+];
                 {airport && (
+];
                   <button
                     onClick={() => openAirportMap(airport)}
                     style={savedMapButtonStyle}
@@ -1848,6 +1847,7 @@ function FavoriteAirports({
       )}
 
       {showMap && selectedAirportMap && (
+];
         <div style={mapBoxStyle}>
           <div style={mapHeaderStyle}>
             <h4 style={mapTitleStyle}>{selectedAirportMap.name}</h4>
@@ -1920,8 +1920,10 @@ function StaffDashboard({
         />
         <div style={notificationTypeListStyle}>
           {Object.entries(notificationTypes).map(([key, type]) => (
+];
             <span key={key} style={notificationTypeStyle}>
               {type.label}
+];
             </span>
           ))}
         </div>
@@ -1931,6 +1933,7 @@ function StaffDashboard({
       </div>
 
       {customerInquiries.map((inquiry) => (
+];
         <button
           key={inquiry.id}
           onClick={() => setSelectedInquiry(inquiry)}
@@ -1939,11 +1942,13 @@ function StaffDashboard({
           <strong>{inquiry.passenger}</strong>
           <span>
             {inquiry.type} - {inquiry.urgency}
+];
           </span>
         </button>
       ))}
 
       {selectedInquiry && (
+];
         <div style={staffInquiryStyle}>
           <h3 style={smallHeadingStyle}>Inquiry Details</h3>
           <p>
@@ -2054,6 +2059,7 @@ function AIAssistant({
         }}
       >
         {messages.map((msg, index) => (
+];
           <div
             key={index}
             style={{
@@ -2066,6 +2072,7 @@ function AIAssistant({
           >
             <strong>
               {msg.role === "user"
+];
                 ? "You"
                 : "Assistant"}
             </strong>
@@ -2113,10 +2120,6 @@ function AIAssistant({
     </div>
   );
 }
-
-// ============================================
-// STYLES
-// ============================================
 
 const pageStyle = {
   minHeight: "100vh",
@@ -3219,29 +3222,6 @@ const alertButtonStyle = {
   fontSize: "16px",
   fontWeight: "bold",
   cursor: "pointer",
-};
-
-const altOverlayStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: "rgba(0,0,0,0.85)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 10001,
-};
-
-const altModalStyle = {
-  background: "white",
-  borderRadius: "20px",
-  maxWidth: "500px",
-  width: "90%",
-  padding: "24px",
-  maxHeight: "80vh",
-  overflow: "auto",
 };
 
 export default App;
